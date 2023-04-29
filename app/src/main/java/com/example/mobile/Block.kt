@@ -39,8 +39,8 @@ fun MakeBlock()
             .pointerInput(Unit)
             {
                 detectDragGestures { change, dragAmount ->
-                    if ((offsetX.dp + dragAmount.x.dp < width)&&(offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
-                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp)&&(offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
+                    if ((offsetX.dp + dragAmount.x.dp < width) && (offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
+                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
                 }
             },
         backgroundColor = cols[i%3]
