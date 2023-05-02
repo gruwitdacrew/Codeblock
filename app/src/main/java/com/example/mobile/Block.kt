@@ -14,9 +14,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
-
 val cols = arrayOf(Color.Yellow, Color.Cyan, Color.Red)
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
