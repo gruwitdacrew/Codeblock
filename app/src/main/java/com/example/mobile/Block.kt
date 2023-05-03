@@ -14,6 +14,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
+
 val cols = arrayOf(Color.Yellow, Color.Cyan, Color.Red)
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -28,7 +29,6 @@ fun MakeBlock()
     Card(
         onClick = {
             i++
-            println(i)
         },
         modifier = Modifier
             .padding(15.dp)
@@ -37,8 +37,8 @@ fun MakeBlock()
             .pointerInput(Unit)
             {
                 detectDragGestures { change, dragAmount ->
-                    if ((offsetX.dp + dragAmount.x.dp < width) && (offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
-                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
+                    if ((offsetX.dp + dragAmount.x.dp < width) && (offsetX.dp + dragAmount.x.dp > 0.dp)) offsetX += dragAmount.x
+                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY.dp + dragAmount.y.dp > 0.dp)) offsetY += dragAmount.y
                 }
             },
         backgroundColor = cols[i%3]
