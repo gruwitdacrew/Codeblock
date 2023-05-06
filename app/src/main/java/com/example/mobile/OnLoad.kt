@@ -1,14 +1,13 @@
 package com.example.mobile
 
-
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 var tasks = ArrayDeque<String>()
 var variables = mutableMapOf<String, String>()
+
 
 @Composable
 fun OnLoad() {
@@ -17,6 +16,8 @@ fun OnLoad() {
     var countBlocks = remember {
         mutableStateOf(0)
     }
+    val blocksToRender =
+        remember { mutableStateListOf<@Composable () -> Unit>() }
 
     ModalDrawer(
         drawerState = drawerState,
@@ -24,12 +25,18 @@ fun OnLoad() {
         drawerContentColor = Color(0xFF000000),
         gesturesEnabled = true,
         modifier = Modifier,
+
         drawerContent = {
-            DrawerContent(countBlocks)
+            DrawerContent(
+                countBlocks,
+                blocksToRender,
+                variables = variables
+            )
+
         },
-        content =
-        {
-            WindowContent(scope, drawerState, countBlocks)
+        content = {
+            WindowContent(scope, drawerState, countBlocks, blocksToRender)
         }
     )
+    println(blocksToRender)
 }

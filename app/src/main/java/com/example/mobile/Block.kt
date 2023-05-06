@@ -46,4 +46,12 @@ fun MakeBlock()
     {
 
     }
+//    {
+//        if (i == 0) {
+//            InitBlock(variables)
+//        }
+//        else {
+//            Assignment(i)
+//        }
+//    }
 }

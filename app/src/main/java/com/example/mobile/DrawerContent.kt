@@ -1,6 +1,5 @@
 package com.example.mobile
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,22 +12,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.concurrent.CountDownLatch
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DrawerContent(countBlocks: MutableState<Int>)
-{
+fun DrawerContent(
+    countBlocks: MutableState<Int>,
+    blocksToRender: MutableList<@Composable () -> Unit>,
+    variables: MutableMap<String, String>
+) {
+    var selectedBlock by remember { mutableStateOf(0) }
+
     Column(
         Modifier
             .padding(25.dp)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceEvenly)
-    {
-        Card(onClick = {
-            countBlocks.value++
-        },
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Card(
+            onClick = {
+                selectedBlock = 1
+//                selectedBlocks.add(selectedBlock)
+            },
             modifier = Modifier
                 .height(60.dp)
                 .fillMaxWidth(),
@@ -45,9 +49,13 @@ fun DrawerContent(countBlocks: MutableState<Int>)
                 Text(text = "IF Block", color = Color(0xFFFFFFFF), fontSize = 24.sp)
             }
         }
-        Card(onClick = {
-            countBlocks.value++
-        },
+        Card(
+            onClick = {
+                selectedBlock = 2
+//                selectedBlocks.add(selectedBlock)
+//            countBlocks.value++
+                blocksToRender.add { InitBlock(variables = variables) }
+            },
             modifier = Modifier
                 .height(60.dp)
                 .fillMaxWidth(),
@@ -64,10 +72,11 @@ fun DrawerContent(countBlocks: MutableState<Int>)
                 Text(text = "My variable", color = Color(0xFFFFFFFF), fontSize = 24.sp)
             }
         }
-        Card(onClick = {
-            countBlocks.value++
-            tasks.addLast("")
-        },
+        Card(
+            onClick = {
+                selectedBlock = 3
+                blocksToRender.add { Assignment(1) }
+            },
             modifier = Modifier
                 .height(60.dp)
                 .fillMaxWidth(),
@@ -90,4 +99,8 @@ fun DrawerContent(countBlocks: MutableState<Int>)
             }
         }
     }
+
+    println(blocksToRender)
+
 }
+

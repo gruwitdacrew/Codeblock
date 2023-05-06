@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,11 +19,16 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: MutableState<Int>)
-{
+fun WindowContent(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    countBlocks: MutableState<Int>,
+    blocksToRender: MutableList<@Composable () -> Unit>
+) {
 
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
+
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = { ModalContent() }
@@ -47,8 +53,8 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
                     },
             )
             {
-                for (i in 0 until countBlocks.value){
-                    Assignment(index = i);
+                blocksToRender.forEach { block ->
+                    block()
                 }
             }
             Row(
@@ -62,13 +68,14 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
                 FloatingActionButton(
                     onClick = {
                         val temp = tasks.toList();
-                        for (item in temp){
+                        for (item in temp) {
                             println(item)
-                            if(item.contains('=')){
-                                variables[item.split("=")[0]] = RPS.fromRPS(variables, RPS.toRPS(item.split("=")[1]))
+                            if (item.contains('=')) {
+                                variables[item.split("=")[0]] =
+                                    RPS.fromRPS(variables, RPS.toRPS(item.split("=")[1]))
                             }
                         }
-                        for((key, item) in variables){
+                        for ((key, item) in variables) {
                             println("$key $item")
                         }
                         // Отобразить модальное окно
@@ -86,7 +93,7 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
                     Text(text = "Консоль", color = Color(0xFFFFFFFF), fontSize = 12.sp)
                 }
                 Button(
-                    onClick = {scope.launch{drawerState.open()} },
+                    onClick = { scope.launch { drawerState.open() } },
                     modifier = Modifier
                         .padding(15.dp)
                         .size(60.dp, 60.dp),
@@ -99,15 +106,17 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
             }
         }
     }
+
 }
 
 
 @Composable
 fun ModalContent() {
     var text by remember { mutableStateOf("") }
-    Column(modifier = Modifier
-        .padding(20.dp)
-        .height(40.dp)
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .height(40.dp)
     ) {
         Text(text = "Вывод")
     }
