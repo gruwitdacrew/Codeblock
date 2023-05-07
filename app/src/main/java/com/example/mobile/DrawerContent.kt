@@ -26,80 +26,41 @@ fun DrawerContent(
         Modifier
             .padding(25.dp)
             .fillMaxSize(),
+
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Card(
+        BlockCard(
+            text = "IF Block",
+            color = Color(0xFFC48E08),
+            shape = CutCornerShape(50),
             onClick = {
                 selectedBlock = 1
-//                selectedBlocks.add(selectedBlock)
-            },
-            modifier = Modifier
-                .height(60.dp)
-                .fillMaxWidth(),
-            backgroundColor = Color(0xFFC48E08),
-            elevation = 5.dp,
-            shape = CutCornerShape(50)
-        )
-        {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            )
-            {
-                Text(text = "IF Block", color = Color(0xFFFFFFFF), fontSize = 24.sp)
             }
-        }
-        Card(
+        )
+        BlockCard(
+            text = "My variable",
+            color = Color(0xFFC40869),
+            shape = RoundedCornerShape(50),
             onClick = {
                 selectedBlock = 2
-//                selectedBlocks.add(selectedBlock)
-//            countBlocks.value++
                 blocksToRender.add { InitBlock(variables = variables) }
-            },
-            modifier = Modifier
-                .height(60.dp)
-                .fillMaxWidth(),
-            backgroundColor = Color(0xFFC40869),
-            elevation = 5.dp,
-            shape = RoundedCornerShape(50)
-        )
-        {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            )
-            {
-                Text(text = "My variable", color = Color(0xFFFFFFFF), fontSize = 24.sp)
             }
-        }
-        Card(
-            onClick = {
-                selectedBlock = 3
-                blocksToRender.add { Assignment(1) }
-            },
-            modifier = Modifier
-                .height(60.dp)
-                .fillMaxWidth(),
-            backgroundColor = Color(0xFF09AA03),
-            elevation = 5.dp,
+        )
+        BlockCard(
+            text = "Assignment",
+            color = Color(0xFF09AA03),
             shape = CutCornerShape(
                 topStartPercent = 100,
                 topEndPercent = 5,
                 bottomStartPercent = 5,
                 bottomEndPercent = 100
-            )
-        )
-        {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            )
-            {
-                Text(text = "Assignment", color = Color(0xFFFFFFFF), fontSize = 24.sp)
+            ),
+            onClick = {
+                selectedBlock = 3
+                blocksToRender.add { Assignment(1) }
             }
-        }
+        )
     }
-
     println(blocksToRender)
 
 }

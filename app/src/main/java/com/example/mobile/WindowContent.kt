@@ -56,6 +56,7 @@ fun WindowContent(
                 blocksToRender.forEach { block ->
                     block()
                 }
+
             }
             Row(
                 modifier = Modifier
