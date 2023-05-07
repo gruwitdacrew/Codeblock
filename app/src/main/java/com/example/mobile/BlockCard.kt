@@ -1,8 +1,5 @@
 package com.example.mobile
-
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text

@@ -30,7 +30,7 @@ fun DrawerContent(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         BlockCard(
-            text = "IF Block",
+            text = "IfBlock(in development)",
             color = Color(0xFFC48E08),
             shape = CutCornerShape(50),
             onClick = {
@@ -58,6 +58,20 @@ fun DrawerContent(
             onClick = {
                 selectedBlock = 3
                 blocksToRender.add { Assignment(1) }
+            }
+        )
+        BlockCard(
+            text = "Print",
+            color = Color(0xFF03A9F4),
+            shape = CutCornerShape(
+                topStartPercent = 0,
+                topEndPercent = 0,
+                bottomStartPercent = 0,
+                bottomEndPercent = 0
+            ),
+            onClick = {
+                selectedBlock = 4
+                blocksToRender.add { PrintBlock("Hello world") }
             }
         )
     }

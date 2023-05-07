@@ -2,6 +2,8 @@ package com.example.mobile
 
 import android.util.DisplayMetrics
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,7 +34,8 @@ fun MakeBlock()
         },
         modifier = Modifier
             .padding(15.dp)
-            .size(100.dp, 60.dp)
+            .fillMaxWidth(fraction = 0.8f)
+            .height(70.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .pointerInput(Unit)
             {
@@ -46,12 +49,4 @@ fun MakeBlock()
     {
 
     }
-//    {
-//        if (i == 0) {
-//            InitBlock(variables)
-//        }
-//        else {
-//            Assignment(i)
-//        }
-//    }
 }
