@@ -31,7 +31,7 @@ fun PrintBlock(String: String) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Print", modifier = Modifier.padding(16.dp))
+            Text("Print", modifier = Modifier.padding(14.dp))
             TextField(
                 value = text,
                 onValueChange = { newText ->

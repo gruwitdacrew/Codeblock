@@ -3,9 +3,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -20,59 +22,61 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 @Composable
-fun Assignment(index: Int)
-{
+fun Assignment(index: Int) {
     var variable by remember { mutableStateOf("") }
     var expression by remember { mutableStateOf("") }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
+
     Card(
         modifier = Modifier
             .padding(15.dp)
+            .fillMaxWidth(1f)
             .size(180.dp, 70.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-            .pointerInput(Unit)
-            {
+            .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
                     if ((offsetX.dp + dragAmount.x.dp + 225.dp < width) && (offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
                     if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
                 }
             },
+        shape = RoundedCornerShape(16.dp),
         backgroundColor = Color.Cyan
-    )
-    {
+    ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-        ){
+        ) {
             TextField(
                 value = variable,
-                onValueChange = {newText ->
+                onValueChange = { newText ->
                     variable = newText
-                    tasks[index] = "$variable=$expression";
+                    tasks[index] = "$variable=$expression"
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier
-                    .background(Color.Red)
                     .weight(1f)
+                    .padding(16.dp)
+                    .background(Color.Transparent)
             )
             Text(
                 text = "=",
                 fontSize = 25.sp,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(0.5f),
                 textAlign = TextAlign.Center
-            );
+            )
             TextField(
                 value = expression,
-                onValueChange = {newText ->
+                onValueChange = { newText ->
                     expression = newText
-                    tasks[index] = "$variable=$expression";
+                    tasks[index] = "$variable=$expression"
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier
-                    .background(Color.Yellow)
-                    .weight(2f)
+                    .weight(2.5f)
+                    .padding(16.dp)
+                    .background(Color.Transparent)
             )
         }
     }
