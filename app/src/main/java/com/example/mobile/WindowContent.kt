@@ -3,6 +3,8 @@ package com.example.mobile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -111,6 +113,25 @@ fun WindowContent(
 
 
 @Composable
+fun ModalContent(items: List<String> = List(100) { "Item $it" }) {
+    var text by remember { mutableStateOf("") }
+    val lines = text.lines()
+
+    Box(modifier = Modifier.padding(20.dp)) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            items(lines) { line ->
+                Text(text = line)
+            }
+        }
+    }
+}
+
+/*
+модальное окно, которое выезжает снизу
+@Composable
 fun ModalContent() {
     var text by remember { mutableStateOf("") }
     Column(
@@ -121,3 +142,4 @@ fun ModalContent() {
         Text(text = "Вывод")
     }
 }
+ */
