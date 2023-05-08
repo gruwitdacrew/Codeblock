@@ -30,7 +30,7 @@ fun DrawerContent(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         BlockCard(
-            text = "IfBlock(in development)",
+            text = "IfBlock(in dev)",
             color = Color(0xFFC48E08),
             shape = CutCornerShape(50),
             onClick = {
