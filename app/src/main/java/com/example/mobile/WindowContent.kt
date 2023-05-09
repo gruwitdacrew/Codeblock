@@ -24,15 +24,16 @@ fun WindowContent(
     scope: CoroutineScope,
     drawerState: DrawerState,
     countBlocks: MutableState<Int>,
-    blocksToRender: MutableList<@Composable () -> Unit>
+
 ) {
 
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
+    val printLines = remember { mutableStateListOf<String>() }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
-        sheetContent = { ModalContent() }
+        sheetContent = { ModalContent(printLines) },
     )
     {
         Column(
@@ -54,10 +55,10 @@ fun WindowContent(
                     },
             )
             {
-                blocksToRender.forEach { block ->
-                    block()
-                }
 
+                blocksToRender.forEach { block ->
+                    block.content()
+                }
             }
             Row(
                 modifier = Modifier
@@ -113,11 +114,13 @@ fun WindowContent(
 
 
 @Composable
-fun ModalContent(items: List<String> = List(100) { "Item $it" }) {
+fun ModalContent(lines: List<String>) {
     var text by remember { mutableStateOf("") }
-    val lines = text.lines()
 
-    Box(modifier = Modifier.padding(20.dp)) {
+    Box(modifier = Modifier
+        .padding(20.dp)
+        .defaultMinSize(50.dp, 50.dp)
+    ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 8.dp)

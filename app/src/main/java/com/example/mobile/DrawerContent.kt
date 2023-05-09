@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DrawerContent(
     countBlocks: MutableState<Int>,
-    blocksToRender: MutableList<@Composable () -> Unit>,
     variables: MutableMap<String, String>
 ) {
     var selectedBlock by remember { mutableStateOf(0) }
@@ -43,7 +42,14 @@ fun DrawerContent(
             shape = RoundedCornerShape(50),
             onClick = {
                 selectedBlock = 2
-                blocksToRender.add { InitBlock(variables = variables) }
+                val blockIndex = blocksToRender.size
+//                blocksToRender.add { InitBlock(variables = variables)}
+                blocksToRender.add(Block(blocksToRender.size) {
+                    InitBlock(variables = variables, blockIndex)
+                })
+//                blocksToRender.forEachIndexed { index, block ->
+//                    block.id = index
+//                }
             }
         )
         BlockCard(
@@ -57,7 +63,7 @@ fun DrawerContent(
             ),
             onClick = {
                 selectedBlock = 3
-                blocksToRender.add { Assignment(1) }
+//                blocksToRender.add { Assignment(1) }
             }
         )
         BlockCard(
@@ -71,11 +77,18 @@ fun DrawerContent(
             ),
             onClick = {
                 selectedBlock = 4
-                blocksToRender.add { PrintBlock("Hello world") }
+                val blockIndex = blocksToRender.size // Get the current size as the index
+                blocksToRender.add(Block(blockIndex) {
+                    PrintBlock("Hello", blockIndex)
+                })
+//                blocksToRender.forEachIndexed { index, block ->
+//                    block.id = index
+//                }
+//                println(blockIndex)
+//                println(blocksToRender.size)
+//                println(blocksToRender)
             }
         )
     }
-    println(blocksToRender)
-
 }
 

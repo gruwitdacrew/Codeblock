@@ -8,7 +8,12 @@ import androidx.compose.ui.tooling.preview.Preview
 
 var tasks = ArrayDeque<String>()
 var variables = mutableMapOf<String, String>()
+//val blocksToRender: MutableList<@Composable () -> Unit> = mutableStateListOf()
+data class Block(var id: Int, val content: @Composable () -> Unit)
+val blocksToRender: MutableList<Block> = mutableStateListOf()
 
+var idCounter = 0
+//val blocksToRender: MutableList<Pair<Int, @Composable () -> Unit>> = mutableListOf()
 @Composable
 fun OnLoad() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -16,8 +21,6 @@ fun OnLoad() {
     var countBlocks = remember {
         mutableStateOf(0)
     }
-    val blocksToRender =
-        remember { mutableStateListOf<@Composable () -> Unit>() }
 
     ModalDrawer(
         drawerState = drawerState,
@@ -29,14 +32,13 @@ fun OnLoad() {
         drawerContent = {
             DrawerContent(
                 countBlocks,
-                blocksToRender,
                 variables = variables
             )
 
         },
         content = {
-            WindowContent(scope, drawerState, countBlocks, blocksToRender)
+            WindowContent(scope, drawerState, countBlocks)
         }
     )
-    println(blocksToRender)
+
 }

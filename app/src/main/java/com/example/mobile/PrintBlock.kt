@@ -22,13 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-
 @Composable
 fun PrintBlock(
     string: String,
-//    onDelete: () -> Unit
+    blockId: Int,
 ) {
     var text by remember { mutableStateOf("") }
+
 
     Card(
         modifier = Modifier
@@ -37,7 +37,6 @@ fun PrintBlock(
         shape = RoundedCornerShape(16.dp),
         backgroundColor = Color.LightGray
     ) {
-
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
@@ -56,14 +55,23 @@ fun PrintBlock(
                         .background(Color.Transparent)
                 )
                 IconButton(
-                    onClick = { /*onDelete*/ },
+                    onClick = {
+                        print("-------------------------------------------------------\n")
+                        println("$blockId= blockId $text")
+                        val deleteBlock =  blocksToRender.find{ it.id == blockId }
+                        println(blocksToRender[deleteBlock!!.id].content.toString())
+                        blocksToRender.removeAt(deleteBlock!!.id)
+                        println(blocksToRender.count())
+
+                        blocksToRender.forEachIndexed { index, block ->
+                            block.id = index
+                        }
+                    },
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = "delete")
                 }
-
             }
-
         }
     }
 }
