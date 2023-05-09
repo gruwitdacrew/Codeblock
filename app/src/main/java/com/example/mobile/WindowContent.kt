@@ -15,12 +15,49 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+fun start(item:String){
+    if(item[0] == '='){
+        val taskNow = item.substring(1).split("=", limit = 2);
+        variables[taskNow[0]] = RPS.fromRPS(variables, RPS.toRPS(taskNow[1]))
+    }
+    else if(item[0] == '?'){
+        var taskNow = item.substring(1).split(":", limit=2).toMutableList()
+        val indexOfElse = Regex("-?[0-9]+").find(taskNow[0])!!.value.toInt()
+        val condition = Regex("-?[0-9]+").replaceFirst(taskNow[0], "")
+        if(indexOfElse != -1){
+            val ifActions = taskNow[1].substring(0,indexOfElse-1).split(",");
+            val elseActions = taskNow[1].substring(indexOfElse).split(",")
+            println("${ifActions} ${elseActions}")
+            if(RPS.calculate(variables, condition) == "1"){
+                ifActions.forEach { action ->
+                    start(action)
+                }
+            }
+            else{
+                elseActions.forEach { action ->
+                    start(action)
+                }
+            }
+        }
+        else{
+            if(RPS.calculate(variables, condition) == "1"){
+                val ifActions = taskNow[1].split(",")
+                ifActions.forEach { action ->
+                    start(action)
+                }
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: MutableState<Int>)
-{
-
+fun WindowContent(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    countBlocks: MutableState<Int>,
+) {
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
     ModalBottomSheetLayout(
@@ -41,14 +78,15 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
                     .background(Color(0xFFE7ECE6))
                     .border(width = 3.dp, color = Color.Black)
                     .onGloballyPositioned { coordinates ->
-                        // Set column height using the LayoutCoordinates
                         height = (coordinates.size.height * 0.85).dp
                         width = (coordinates.size.width * 0.8).dp
                     },
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             )
             {
-                for (i in 0 until countBlocks.value){
-                    Assignment(index = i);
+                for (block in blocksToRender)
+                {
+                    block.element()
                 }
             }
             Row(
@@ -61,13 +99,14 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
             {
                 FloatingActionButton(
                     onClick = {
-                        val temp = tasks.toList();
-                        for (item in temp){
-                            println(item)
-                            if(item.contains('=')){
-                                variables[item.split("=")[0]] = RPS.fromRPS(variables, RPS.toRPS(item.split("=")[1]))
-                            }
+//                       blocksToRender.addLast("?13a>10:=a=a+1,=b=a+1:=b=a")
+//                       blocksToRender.addLast("?-1a>10:=a=a+1,=b=a+1")
+                        val finalTasks = blocksToRender.toList();
+                        for ((index, element, item) in finalTasks){
+                            println(item.value)
+                            start(item.value)
                         }
+
                         for((key, item) in variables){
                             println("$key $item")
                         }
@@ -75,7 +114,6 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
                         coroutineScope.launch {
                             sheetState.show()
                         }
-
                     },
                     modifier = Modifier
                         .padding(15.dp)
@@ -86,7 +124,9 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
                     Text(text = "Консоль", color = Color(0xFFFFFFFF), fontSize = 12.sp)
                 }
                 Button(
-                    onClick = {scope.launch{drawerState.open()} },
+                    onClick = {
+                        blocksToAdd = blocksToRender
+                        scope.launch{drawerState.open()} },
                     modifier = Modifier
                         .padding(15.dp)
                         .size(60.dp, 60.dp),
@@ -101,14 +141,12 @@ fun WindowContent(scope: CoroutineScope, drawerState: DrawerState, countBlocks: 
     }
 }
 
-
 @Composable
 fun ModalContent() {
-    var text by remember { mutableStateOf("") }
     Column(modifier = Modifier
         .padding(20.dp)
-        .height(40.dp)
+        .height(60.dp)
     ) {
-        Text(text = "Вывод")
+        Text(text = "Консоль");
     }
 }

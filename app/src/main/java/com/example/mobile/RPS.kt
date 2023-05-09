@@ -2,38 +2,57 @@ package com.example.mobile
 
 class RPS {
     companion object{
-        fun toRPS(input: String): String{
-            var stack = ArrayDeque<Char>()
+
+        @JvmStatic
+        public fun calculate(dictionary: MutableMap<String, String>, input: String): String{
+            return fromRPS(dictionary, toRPS(input))
+        }
+        @JvmStatic
+        public fun toRPS(input: String): String{
+            var stack = ArrayDeque<String>()
             var answer = "";
-            for (i in input){
-                if(i.toString().matches("[a-zA-Z0-9]".toRegex())){
-                    answer+=i;
-                }
-                else if(i != ' '){
+            var charNow:Char;
+            for(i in 0 until input.length){
+                charNow = input[i]
+                if(charNow.toString().matches("[a-zA-Z0-9]+".toRegex())) answer+=charNow;
+                else if(charNow != ' ' && !(input[i-1].toString().matches("[<>=]".toRegex()) && input[i] == '=')){
                     if(answer[answer.length-1] != ' ') answer+=" ";
-                    when(i){
-                        ')' ->  {
-                            while(stack.size > 0 && stack.last() != '('){
+                    when(charNow){
+                        ')' -> {
+                            while(stack.size > 0 && stack.last() != "("){
                                 answer+=stack.last()
                                 stack.removeLast()
                             }
                             stack.removeLast();
                         }
-                        '+' -> {
-                            while(stack.size > 0 && stack.last().toString().matches("[+/*%-]".toRegex())) {
+                        '|', '&' -> {
+                            while(stack.size > 0 && stack.last().matches("[+/*%<>=|&-]+".toRegex())) {
                                 answer+=(stack.last() + " ");
                                 stack.removeLast()
                             }
-                            stack.addLast('+')
+                            stack.addLast(charNow.toString())
                         }
-                        '-' -> {
-                            while(stack.size > 0 && stack.last().toString().matches("[+/*%-]".toRegex())) {
+                        '<','>','=' -> {
+                            while(stack.size > 0 && stack.last().matches("[+/*%<>=-]+".toRegex())) {
                                 answer+=(stack.last() + " ");
                                 stack.removeLast()
                             }
-                            stack.addLast('-')
+                            if(input[i+1] == '=') stack.addLast(charNow + "=")
+                            else stack.addLast(charNow.toString())
                         }
-                        else -> stack.addLast(i)
+                        '+', '-' -> {
+                            if(input[i-1] == '('){
+                                answer+=charNow;
+                            }
+                            else{
+                                while(stack.size > 0 && stack.last().matches("[+/*%-]".toRegex())) {
+                                    answer+=(stack.last() + " ");
+                                    stack.removeLast()
+                                }
+                                stack.addLast(charNow.toString())
+                            }
+                        }
+                        else -> stack.addLast(charNow.toString())
                     }
                 }
             }
@@ -43,39 +62,45 @@ class RPS {
                 answer+=(stack.last())
                 stack.removeLast()
             }
-            return answer + " ";
+            return answer;
         }
-        fun fromRPS(dictionary: MutableMap<String, String>, input: String) : String{
+
+        private fun booleanToInt(input:Boolean):Int{
+            return if (input) 1 else 0;
+        }
+
+        @JvmStatic
+        public fun fromRPS(dictionary: MutableMap<String, String>, input: String) : String{
+            val listOfActions = input.split(' ');
             var stack = ArrayDeque<String>()
-            var numberNow = "";
-            for(i in input){
-                if(i.toString().matches("[+/*-]".toRegex())){
+            for(i in listOfActions){
+                if(i.matches("[+/*%><|&=-]+".toRegex())){
                     var first = stack.last();
-                    if(first.matches("[a-zA-Z]".toRegex())) first = dictionary[first].toString()
+                    if(first.matches("[a-zA-Z]+".toRegex())) first = dictionary[first].toString()
                     stack.removeLast();
 
                     var second = stack.last();
-                    if(second.matches("[a-zA-Z]".toRegex())) second = dictionary[second].toString()
+                    if(second.matches("[a-zA-Z]+".toRegex())) second = dictionary[second].toString()
                     stack.removeLast();
-
                     when(i){
-                        '-' -> stack.addLast((second.toInt() - first.toInt()).toString());
-                        '+' -> stack.addLast((second.toInt() + first.toInt()).toString());
-                        '*' -> stack.addLast((second.toInt() * first.toInt()).toString());
-                        '/' -> stack.addLast((second.toInt() / first.toInt()).toString());
-                        '%' -> stack.addLast((second.toInt() % first.toInt()).toString());
+                        "-" -> stack.addLast((second.toInt() - first.toInt()).toString());
+                        "+" -> stack.addLast((second.toInt() + first.toInt()).toString());
+                        "*" -> stack.addLast((second.toInt() * first.toInt()).toString());
+                        "/" -> stack.addLast((second.toInt() / first.toInt()).toString());
+                        "%" -> stack.addLast((second.toInt() % first.toInt()).toString());
+                        "|" -> stack.addLast(booleanToInt(second.toInt() != 0 || first.toInt() != 0).toString());
+                        "&" -> stack.addLast(booleanToInt(second.toInt() != 0 && first.toInt() != 0).toString());
+                        ">" -> stack.addLast(booleanToInt(second.toInt() > first.toInt()).toString());
+                        "<" -> stack.addLast(booleanToInt(second.toInt() < first.toInt()).toString());
+                        ">=" -> stack.addLast(booleanToInt(second.toInt() >= first.toInt()).toString());
+                        "<=" -> stack.addLast(booleanToInt(second.toInt() <= first.toInt()).toString());
+                        "==" -> stack.addLast(booleanToInt(second.toInt() == first.toInt()).toString());
                     }
                 }
-                else{
-                    if(i == ' ' && numberNow.length > 0){
-                        stack.addLast(numberNow)
-                        numberNow = "";
-                    };
-                    else numberNow+=i;
-
-                }
+                else stack.addLast(i)
             }
-            return stack.first();
+            return if (stack.first().matches("[a-zA-Z]+".toRegex())) variables[stack.first()]!! else stack.first()
+
         }
     }
 }

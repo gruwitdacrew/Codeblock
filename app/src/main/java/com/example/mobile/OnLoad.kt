@@ -1,14 +1,14 @@
 package com.example.mobile
 
-
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-
-var tasks = ArrayDeque<String>()
+data class Block (var id: Int, var element: @Composable () -> Unit, var expression: MutableState<String>)
 var variables = mutableMapOf<String, String>()
+var blocksToRender: MutableList<Block> =  mutableStateListOf()
+var blocksToAdd: MutableList<Block> =  blocksToRender
+var offsetsY = mutableListOf<Float>(0f)
 
 @Composable
 fun OnLoad() {
@@ -25,7 +25,10 @@ fun OnLoad() {
         gesturesEnabled = true,
         modifier = Modifier,
         drawerContent = {
-            DrawerContent(countBlocks)
+            DrawerContent(
+                scope,
+                drawerState
+            )
         },
         content =
         {

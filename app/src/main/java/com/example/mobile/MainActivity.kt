@@ -37,7 +37,6 @@ import com.example.mobile.ui.theme.MobileTheme
 var height = 0.dp
 var width = 0.dp
 class MainActivity : ComponentActivity() {
-    companion object {}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

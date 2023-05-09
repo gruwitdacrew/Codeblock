@@ -1,8 +1,12 @@
 package com.example.mobile
 
+import android.graphics.drawable.Icon
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -13,12 +17,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
 
 @Composable
-fun InitBlock(index: Int, blocks:MutableList<Block>,
+fun PrintBlock(
+    blockId: Int,
+    blocks:MutableList<Block>
 ) {
-    var key by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("") }
 
 
     Card(
@@ -29,39 +38,40 @@ fun InitBlock(index: Int, blocks:MutableList<Block>,
         backgroundColor = Color.LightGray
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(8.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) { // Используем Row для размещения в одной строке
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Print", modifier = Modifier.padding(14.dp))
                 TextField(
-                    value = key,
-                    onValueChange = {
-                        key = it.trim() // Удаляем лишние пробелы в начале и конце
-                        blocks[index].expression.value = "=$key=0"
+                    value = text,
+                    onValueChange = { newText ->
+                        text = newText
                     },
-                    label = { Text("Название переменной") },
-                    modifier = Modifier.weight(1f) // Занимает всю доступную ширину
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 16.dp)
+                        .background(Color.Transparent)
                 )
                 IconButton(
                     onClick = {
                         print("-------------------------------------------------------\n")
-                        println("$index= blockId ")
-                        val deleteBlock = blocks.find { it.id == index }
-                        println(blocks[deleteBlock!!.id ].element.toString())
-                        blocks.removeAt(deleteBlock!!.id )
+                        println("$blockId= blockId $text")
+                        val deleteBlock =  blocksToRender.find{ it.id == blockId }
+                        println(blocksToRender[deleteBlock!!.id].element.toString())
+                        blocksToRender.removeAt(deleteBlock!!.id)
                         println(blocksToRender.count())
 
                         blocksToRender.forEachIndexed { index, block ->
                             block.id = index
-                            println(block.id.toString() + " " + block.element.toString())
                         }
                     },
-                    modifier = Modifier.padding(start = 8.dp) // Изменяем отступ с помощью start
+                    modifier = Modifier.padding(end = 8.dp)
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = "delete")
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
