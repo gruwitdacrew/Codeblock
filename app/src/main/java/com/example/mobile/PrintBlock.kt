@@ -57,17 +57,7 @@ fun PrintBlock(
                 )
                 IconButton(
                     onClick = {
-                        print("-------------------------------------------------------\n")
-                        println("$blockId= blockId $text")
-                        val deleteBlock =  blocks.find{ it.id == blockId}
-                        blocks.remove(deleteBlock)
-//                        println(blocks[deleteBlock!!.id].element.toString())
-//                        blocks.removeAt(deleteBlock!!.id)
-                        println(blocks.count())
-
-//                        blocks.forEachIndexed { index, block ->
-//                            block.id = index
-//                        }
+                        handleBlockDelete(blockId, blocks)
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 ) {

@@ -45,12 +45,7 @@ fun InitBlock(blockId: UUID, blocks:MutableList<Block>,
                 )
                 IconButton(
                     onClick = {
-                        print("-------------------------------------------------------\n")
-                        println("$blockId= blockId;")
-                        val deleteBlock =  blocks.find{ it.id == blockId}
-                        println(deleteBlock.toString()+" =delete block")
-                        blocks.remove(deleteBlock)
-                        println(blocksToRender.count())
+                        handleBlockDelete(blockId, blocks)
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {

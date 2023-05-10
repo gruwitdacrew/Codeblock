@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import java.util.UUID
 
 @Composable
-fun Assignment(index: UUID, blocks:MutableList<Block>) {
+fun Assignment(blockId: UUID, blocks:MutableList<Block>) {
     var variable by remember { mutableStateOf("") }
     var expression by remember { mutableStateOf("") }
     var offsetX by remember { mutableStateOf(0f) }
@@ -58,7 +58,7 @@ fun Assignment(index: UUID, blocks:MutableList<Block>) {
                 value = variable,
                 onValueChange = { newText ->
                     variable = newText
-//                    blocks[index].expression.value = "=$variable=$expression";
+//                    blocks[blockId].expression.value = "=$variable=$expression";
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier
@@ -84,17 +84,7 @@ fun Assignment(index: UUID, blocks:MutableList<Block>) {
             )
             IconButton(
                 onClick = {
-                    print("-------------------------------------------------------\n")
-                    println("$index= blockId ")
-                    val deleteBlock =  blocks.find{ it.id == index}
-                    blocks.remove(deleteBlock)
-
-                    println(blocks.count())
-
-//                    blocks.forEachIndexed { index, block ->
-//                        block.id = index
-//                        println(block.id.toString() + " " + index.toString())
-//                    }
+                    handleBlockDelete(blockId, blocks)
                 },
                 modifier = Modifier.padding(start = 8.dp) // Изменяем отступ с помощью start
             ) {

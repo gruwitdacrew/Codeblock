@@ -12,8 +12,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DrawerState
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -37,6 +41,8 @@ import com.example.mobile.width
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
+import com.example.mobile.handleBlockDelete
+import java.util.UUID
 
 fun getExpression(
     ifBlocks:MutableList<Block>,
@@ -61,7 +67,7 @@ fun getExpression(
 
 @Composable
 fun Condition(
-    index: Int,
+    index: UUID,
     scope: CoroutineScope,
     drawerState: DrawerState,
     blocks:MutableList<Block>
@@ -74,19 +80,19 @@ fun Condition(
 
     for(i in ifBlocksToRender){
         LaunchedEffect(i.expression.value){
-            blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-            println(blocks[index].expression.value)
+//            blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+//            println(blocks[index].expression.value)
         }
     }
     for(i in elseBlocksToRender){
         LaunchedEffect(i.expression.value){
-            blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-            println(blocks[index].expression.value)
+//            blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+//            println(blocks[index].expression.value)
         }
     }
     LaunchedEffect(condition){
-        blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-        println(blocks[index].expression.value)
+//        blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+//        println(blocks[index].expression.value)
     }
 
     Card(
@@ -163,6 +169,15 @@ fun Condition(
                 }) {
                     Text(text = "+")
                 }
+
+            }
+            IconButton(
+                onClick = {
+                    handleBlockDelete(index, blocks)
+                },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = "delete")
             }
         }
     }

@@ -30,17 +30,17 @@ fun DrawerContent(
 
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-//        BlockCard(
-//            text = "IfBlock",
-//            color = Color(0xFFC48E08),
-//            shape = CutCornerShape(50),
-//            onClick = {
-//                val index = UUID.randomUUID()
-//                blocksToAdd.add(Block(UUID.randomUUID(), { Condition(index, scope, drawerState, blocksToAdd) }, mutableStateOf("")))
-//            }
-//        )
         BlockCard(
-            text = "My variable",
+            text = "IfBlock",
+            color = Color(0xFFC48E08),
+            shape = CutCornerShape(50),
+            onClick = {
+                val index = UUID.randomUUID()
+                blocksToAdd.add(Block(index, { Condition(index, scope, drawerState, blocksToAdd) }, mutableStateOf("")))
+            }
+        )
+        BlockCard(
+            text = "MyVariable",
             color = Color(0xFFC40869),
             shape = RoundedCornerShape(50),
             onClick = {

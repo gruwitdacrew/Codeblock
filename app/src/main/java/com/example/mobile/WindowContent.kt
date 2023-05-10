@@ -73,13 +73,13 @@ fun WindowContent(
         sheetContent = { ModalContent(lines) }
     )
     {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .border(width = 3.dp, color = Color.Black)
         )
         {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
@@ -92,14 +92,15 @@ fun WindowContent(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             )
             {
-                for (block in blocksToRender)
-                {
+                items(blocksToRender) { block ->
                     block.element()
                 }
             }
+
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
                     .background(color = Color(0xFF378AA3)),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -109,8 +110,12 @@ fun WindowContent(
                     onClick = {
                         val finalTasks = blocksToRender.toList();
                         lines.clear()
+
                         for ((index, element, item) in finalTasks){
-                            start(item.value,lines)
+                            if (item.value.length > 1){
+                                start(item.value,lines)
+                            }
+
                         }
 
                         // Отобразить модальное окно
@@ -129,7 +134,8 @@ fun WindowContent(
                 Button(
                     onClick = {
                         blocksToAdd = blocksToRender
-                        scope.launch{drawerState.open()} },
+                        scope.launch { drawerState.open() }
+                    },
                     modifier = Modifier
                         .padding(15.dp)
                         .size(60.dp, 60.dp),
@@ -160,3 +166,91 @@ fun ModalContent(lines: MutableList<String>) {
         }
     }
 }
+
+//WindowContnet в котором работет скролл но вылетает при клике на консоль
+//@OptIn(ExperimentalMaterialApi::class)
+//@Composable
+//fun WindowContent(
+//    scope: CoroutineScope,
+//    drawerState: DrawerState,
+//) {
+//    val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+//    val coroutineScope = rememberCoroutineScope()
+//    var lines = remember{ mutableStateListOf<String>() }
+//    ModalBottomSheetLayout(
+//        sheetState = sheetState,
+//        sheetContent = { ModalContent(lines) }
+//    )
+//    {
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .border(width = 3.dp, color = Color.Black)
+//        )
+//        {
+//            LazyColumn(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .fillMaxHeight(0.9f)
+//                    .background(Color(0xFFE7ECE6))
+//                    .border(width = 3.dp, color = Color.Black)
+//                    .onGloballyPositioned { coordinates ->
+//                        height = (coordinates.size.height * 0.85).dp
+//                        width = (coordinates.size.width * 0.8).dp
+//                    },
+//                verticalArrangement = Arrangement.spacedBy(10.dp)
+//            )
+//            {
+//                items(blocksToRender) { block ->
+//                    block.element()
+//                }
+//            }
+//
+//            Row(
+//                modifier = Modifier
+//                    .align(Alignment.BottomCenter)
+//                    .fillMaxWidth()
+//                    .background(color = Color(0xFF378AA3)),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.SpaceEvenly,
+//            )
+//            {
+//                FloatingActionButton(
+//                    onClick = {
+//                        val finalTasks = blocksToRender.toList();
+//                        lines.clear()
+//                        for ((index, element, item) in finalTasks){
+//                            start(item.value,lines)
+//                        }
+//
+//                        // Отобразить модальное окно
+//                        coroutineScope.launch {
+//                            sheetState.show()
+//                        }
+//                    },
+//                    modifier = Modifier
+//                        .padding(15.dp)
+//                        .size(100.dp, 60.dp),
+//                    backgroundColor = Color.Black,
+//                    shape = RoundedCornerShape(15),
+//                ) {
+//                    Text(text = "Консоль", color = Color(0xFFFFFFFF), fontSize = 12.sp)
+//                }
+//                Button(
+//                    onClick = {
+//                        blocksToAdd = blocksToRender
+//                        scope.launch { drawerState.open() }
+//                    },
+//                    modifier = Modifier
+//                        .padding(15.dp)
+//                        .size(60.dp, 60.dp),
+//                    colors = ButtonDefaults.buttonColors(Color(0xFF000000)),
+//                    shape = RoundedCornerShape(15),
+//                )
+//                {
+//                    Text(text = "+", color = Color(0xFFFFFFFF), fontSize = 24.sp)
+//                }
+//            }
+//        }
+//    }
+//}
