@@ -41,49 +41,60 @@ fun BlockCard(
 }
 fun putInPlace(offsetY: Dp, index: Int)
 {
-    println(blocksToRender)
-    if (offsetY.value>0)
+    if (offsetY>0.dp)
     {
         for (i in index+1 until offsetsY.size)
         {
-            if (offsetsY[index] + offsetY.value <= offsetsY[i])
+            if (offsetsY[index] + offsetY <= offsetsY[i])
             {
-                blocksToRender = arrayListOf(
+                blocksToRender =  mutableStateListOf(
                     *blocksToRender.slice(0 until index).toTypedArray(),
                     *blocksToRender.slice(index+1 until i).toTypedArray(),
                     blocksToRender[index],
                     *blocksToRender.slice(i until blocksToRender.size).toTypedArray())
-                println(blocksToRender)
+                for (j in 0 until blocksToRender.size)
+                {
+                    println(blocksToRender[j].id)
+                }
                 return
             }
         }
-        blocksToRender = arrayListOf(
+        blocksToRender =  mutableStateListOf(
             *blocksToRender.slice(0 until index).toTypedArray(),
             *blocksToRender.slice(index+1 until blocksToRender.size).toTypedArray(),
             blocksToRender[index])
-        println(blocksToRender)
+        for (j in 0 until blocksToRender.size)
+        {
+            println(blocksToRender[j].id)
+        }
     }
     else
     {
         for (i in index - 1 downTo 0)
         {
-            if (offsetsY[index] + offsetY.value >= offsetsY[i])
+            if (offsetsY[index] + offsetY >= offsetsY[i])
             {
-                blocksToRender = arrayListOf(
+                blocksToRender =  mutableStateListOf(
                     *blocksToRender.slice(0 until i+1).toTypedArray(),
                     blocksToRender[index],
                     *blocksToRender.slice(i+1 until index).toTypedArray(),
                     *blocksToRender.slice(index+1 until blocksToRender.size).toTypedArray())
-                println(blocksToRender)
+                for (j in 0 until blocksToRender.size)
+                {
+                    println(blocksToRender[j].id)
+                }
                 return
             }
 
         }
-        blocksToRender = arrayListOf(
+        blocksToRender =  mutableStateListOf(
             blocksToRender[index],
             *blocksToRender.slice(0 until index).toTypedArray(),
             *blocksToRender.slice(index+1 until blocksToRender.size).toTypedArray())
-        println(blocksToRender)
+        for (j in 0 until blocksToRender.size)
+        {
+            println(blocksToRender[j].id)
+        }
     }
     return
 }

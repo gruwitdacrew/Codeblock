@@ -3,6 +3,7 @@ package com.example.mobile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -56,7 +57,6 @@ fun start(item:String){
 fun WindowContent(
     scope: CoroutineScope,
     drawerState: DrawerState,
-    countBlocks: MutableState<Int>,
 ) {
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
@@ -76,11 +76,7 @@ fun WindowContent(
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
                     .background(Color(0xFFE7ECE6))
-                    .border(width = 3.dp, color = Color.Black)
-                    .onGloballyPositioned { coordinates ->
-                        height = (coordinates.size.height * 0.85).dp
-                        width = (coordinates.size.width * 0.8).dp
-                    },
+                    .border(width = 3.dp, color = Color.Black),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             )
             {

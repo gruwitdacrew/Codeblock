@@ -34,7 +34,8 @@ fun DrawerContent(
             shape = CutCornerShape(50),
             onClick = {
                 val index = blocksToAdd.size
-                blocksToAdd.add(Block(index, { Condition(index, scope, drawerState, mutableListOf(*blocksToAdd.toTypedArray())) }, mutableStateOf("")))
+                blocksToAdd.add(Block(index, { Condition(index, scope, drawerState, blocksToAdd) }, mutableStateOf("")))
+                offsetsY.add(0.dp)
             }
         )
         BlockCard(
@@ -43,7 +44,8 @@ fun DrawerContent(
             shape = RoundedCornerShape(50),
             onClick = {
                 val index = blocksToAdd.size
-                blocksToAdd.add(Block(index, { InitBlock(index, mutableListOf(*blocksToAdd.toTypedArray())) }, mutableStateOf("")))
+                blocksToAdd.add(Block(index, { InitBlock(index, blocksToAdd) }, mutableStateOf("")))
+
             }
         )
         BlockCard(
@@ -57,7 +59,8 @@ fun DrawerContent(
             ),
             onClick = {
                 val index = blocksToAdd.size
-                blocksToAdd.add(Block(index, { Assignment(index, mutableListOf(*blocksToAdd.toTypedArray())) }, mutableStateOf("")))
+                blocksToAdd.add(Block(index, { Assignment(index, blocksToAdd) }, mutableStateOf("")))
+                offsetsY.add(0.dp)
             }
         )
         BlockCard(
@@ -66,7 +69,8 @@ fun DrawerContent(
             shape = RectangleShape,
             onClick = {
                 val index = blocksToAdd.size
-                blocksToAdd.add(Block(index, { PrintBlock(index, mutableListOf(*blocksToAdd.toTypedArray())) }, mutableStateOf("")))
+                blocksToAdd.add(Block(index, { PrintBlock(index, blocksToAdd) }, mutableStateOf("")))
+
             }
         )
     }

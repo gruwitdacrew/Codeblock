@@ -20,9 +20,9 @@ fun InitBlock(index: Int, blocks:MutableList<Block>,
 ) {
     var key by remember { mutableStateOf("") }
 
-
     Card(
         modifier = Modifier
+
             .padding(16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),

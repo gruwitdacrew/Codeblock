@@ -20,6 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -31,6 +34,7 @@ fun Assignment(index: Int, blocks:MutableList<Block>) {
     var expression by remember { mutableStateOf("") }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
+    val localDensity = LocalDensity.current
 
     Card(
         modifier = Modifier
@@ -38,12 +42,23 @@ fun Assignment(index: Int, blocks:MutableList<Block>) {
             .fillMaxWidth(1f)
             .size(180.dp, 70.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-                    if ((offsetX.dp + dragAmount.x.dp + 225.dp < width) && (offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
-                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
-                }
+            .onGloballyPositioned { coordinates ->
+                offsetsY[index] = with(localDensity) {coordinates.positionInParent().y.toDp()} + with(localDensity){coordinates.size.height.toDp()}/2
+            }
+            .pointerInput(Unit)
+            {
+                detectDragGestures(
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                    },
+                    onDragEnd = {
+                        putInPlace(with(LocalDensity) { offsetY.toDp() }, index)
+                        offsetY = 0f
+                        offsetX = 0f
+                    }
+                )
             },
         shape = RoundedCornerShape(16.dp),
         backgroundColor = Color.Cyan
@@ -105,4 +120,5 @@ fun Assignment(index: Int, blocks:MutableList<Block>) {
             }
         }
     }
+    println(offsetsY)
 }

@@ -4,19 +4,19 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+
 data class Block (var id: Int, var element: @Composable () -> Unit, var expression: MutableState<String>)
 var variables = mutableMapOf<String, String>()
 var blocksToRender: MutableList<Block> =  mutableStateListOf()
 var blocksToAdd: MutableList<Block> =  blocksToRender
-var offsetsY = mutableListOf<Float>(0f)
+var offsetsY = mutableListOf<Dp>()
 
 @Composable
 fun OnLoad() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var countBlocks = remember {
-        mutableStateOf(0)
-    }
 
     ModalDrawer(
         drawerState = drawerState,
@@ -32,7 +32,7 @@ fun OnLoad() {
         },
         content =
         {
-            WindowContent(scope, drawerState, countBlocks)
+            WindowContent(scope, drawerState)
         }
     )
 }

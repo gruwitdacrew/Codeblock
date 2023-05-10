@@ -29,14 +29,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.Block
-import com.example.mobile.blocksToAdd
-import com.example.mobile.blocksToRender
-import com.example.mobile.height
-import com.example.mobile.width
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import com.example.mobile.*
 
 fun getExpression(
     ifBlocks:MutableList<Block>,
@@ -72,6 +71,12 @@ fun Condition(
     var offsetY by remember { mutableStateOf(0f) }
     var condition by remember { mutableStateOf("") }
 
+    val localDensity = LocalDensity.current
+
+    var elementHeight by remember {
+        mutableStateOf(0.dp)
+    }
+
     for(i in ifBlocksToRender){
         LaunchedEffect(i.expression.value){
             blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
@@ -94,13 +99,24 @@ fun Condition(
             .padding(15.dp)
             .size(280.dp, 500.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
+            .onGloballyPositioned { coordinates ->
+                offsetsY[index] = with(localDensity) {coordinates.positionInParent().y.toDp()} + with(localDensity){coordinates.size.height.toDp()}/2
+
+            }
             .pointerInput(Unit)
             {
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-                    if ((offsetX.dp + dragAmount.x.dp + 225.dp < width) && (offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
-                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
-                }
+                detectDragGestures(
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                    },
+                    onDragEnd = {
+                        putInPlace(with(LocalDensity) { offsetY.toDp() }, index)
+                        offsetY = 0f
+                        offsetX = 0f
+                    }
+                )
             },
         backgroundColor = Color.Cyan
     ){
@@ -166,5 +182,6 @@ fun Condition(
             }
         }
     }
+    println(offsetsY)
 }
 
