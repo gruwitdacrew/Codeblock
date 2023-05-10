@@ -9,8 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,8 +25,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.UUID
+
 @Composable
-fun Assignment(index: Int) {
+fun Assignment(index: UUID, blocks:MutableList<Block>) {
     var variable by remember { mutableStateOf("") }
     var expression by remember { mutableStateOf("") }
     var offsetX by remember { mutableStateOf(0f) }
@@ -30,7 +36,7 @@ fun Assignment(index: Int) {
 
     Card(
         modifier = Modifier
-            .padding(15.dp)
+            .padding(10.dp)
             .fillMaxWidth(1f)
             .size(180.dp, 70.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
@@ -52,12 +58,11 @@ fun Assignment(index: Int) {
                 value = variable,
                 onValueChange = { newText ->
                     variable = newText
-                    tasks[index] = "$variable=$expression"
+//                    blocks[index].expression.value = "=$variable=$expression";
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(16.dp)
                     .background(Color.Transparent)
             )
             Text(
@@ -70,14 +75,31 @@ fun Assignment(index: Int) {
                 value = expression,
                 onValueChange = { newText ->
                     expression = newText
-                    tasks[index] = "$variable=$expression"
+//                    blocks[index].expression.value = "=$variable=$expression";
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier
                     .weight(2.5f)
-                    .padding(16.dp)
                     .background(Color.Transparent)
             )
+            IconButton(
+                onClick = {
+                    print("-------------------------------------------------------\n")
+                    println("$index= blockId ")
+                    val deleteBlock =  blocks.find{ it.id == index}
+                    blocks.remove(deleteBlock)
+
+                    println(blocks.count())
+
+//                    blocks.forEachIndexed { index, block ->
+//                        block.id = index
+//                        println(block.id.toString() + " " + index.toString())
+//                    }
+                },
+                modifier = Modifier.padding(start = 8.dp) // Изменяем отступ с помощью start
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = "delete")
+            }
         }
     }
 }

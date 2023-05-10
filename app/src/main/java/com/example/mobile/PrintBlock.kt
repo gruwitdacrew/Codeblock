@@ -20,15 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.UUID
 
 
 @Composable
 fun PrintBlock(
-    string: String,
-    blockId: Int,
+    blockId: UUID,
+    blocks:MutableList<Block>
 ) {
     var text by remember { mutableStateOf("") }
-
 
     Card(
         modifier = Modifier
@@ -48,6 +48,7 @@ fun PrintBlock(
                     value = text,
                     onValueChange = { newText ->
                         text = newText
+//                        blocks[blockId].expression.value = "/$text"
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -58,14 +59,15 @@ fun PrintBlock(
                     onClick = {
                         print("-------------------------------------------------------\n")
                         println("$blockId= blockId $text")
-                        val deleteBlock =  blocksToRender.find{ it.id == blockId }
-                        println(blocksToRender[deleteBlock!!.id].content.toString())
-                        blocksToRender.removeAt(deleteBlock!!.id)
-                        println(blocksToRender.count())
+                        val deleteBlock =  blocks.find{ it.id == blockId}
+                        blocks.remove(deleteBlock)
+//                        println(blocks[deleteBlock!!.id].element.toString())
+//                        blocks.removeAt(deleteBlock!!.id)
+                        println(blocks.count())
 
-                        blocksToRender.forEachIndexed { index, block ->
-                            block.id = index
-                        }
+//                        blocks.forEachIndexed { index, block ->
+//                            block.id = index
+//                        }
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 ) {

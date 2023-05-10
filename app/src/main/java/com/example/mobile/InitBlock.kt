@@ -14,14 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import java.util.UUID
 
 @Composable
-fun InitBlock(
-    variables: MutableMap<String, String>,
-    blockId: Int,
+fun InitBlock(blockId: UUID, blocks:MutableList<Block>,
 ) {
     var key by remember { mutableStateOf("") }
-    var value by remember { mutableStateOf("0") }
+
 
     Card(
         modifier = Modifier
@@ -38,34 +37,22 @@ fun InitBlock(
                 TextField(
                     value = key,
                     onValueChange = {
-                        key = it.trim()
-                        if (key.isNotEmpty()) {
-                            val oldKey = variables.keys.firstOrNull { it != key && it.startsWith(key) }
-                            if (oldKey != null) {
-                                variables.remove(oldKey)
-                            }
-                            variables[key] = ""
-                        }
-                        println(variables)
+                        key = it.trim() // Удаляем лишние пробелы в начале и конце
+//                        blocks[blockId].expression.value = "=$key=0"
                     },
                     label = { Text("Название переменной") },
-                    modifier = Modifier.weight(1f) // Занимает всю доступную ширину
+                    modifier = Modifier.weight(1f)
                 )
                 IconButton(
                     onClick = {
                         print("-------------------------------------------------------\n")
-                        println("$blockId= blockId ")
-                        val deleteBlock = blocksToRender.find { it.id == blockId }
-                        println(blocksToRender[deleteBlock!!.id ].content.toString())
-                        blocksToRender.removeAt(deleteBlock!!.id )
+                        println("$blockId= blockId;")
+                        val deleteBlock =  blocks.find{ it.id == blockId}
+                        println(deleteBlock.toString()+" =delete block")
+                        blocks.remove(deleteBlock)
                         println(blocksToRender.count())
-
-                        blocksToRender.forEachIndexed { index, block ->
-                            block.id = index
-                            println(block.id.toString() + " " + block.content.toString())
-                        }
                     },
-                    modifier = Modifier.padding(start = 8.dp) // Изменяем отступ с помощью start
+                    modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = "delete")
                 }

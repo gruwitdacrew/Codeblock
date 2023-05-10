@@ -4,23 +4,18 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import java.util.UUID
 
-var tasks = ArrayDeque<String>()
+data class Block (val id: UUID = UUID.randomUUID(), var element: @Composable () -> Unit, var expression: MutableState<String>)
 var variables = mutableMapOf<String, String>()
-//val blocksToRender: MutableList<@Composable () -> Unit> = mutableStateListOf()
-data class Block(var id: Int, val content: @Composable () -> Unit)
-val blocksToRender: MutableList<Block> = mutableStateListOf()
+var blocksToRender: MutableList<Block> =  mutableStateListOf()
+var blocksToAdd: MutableList<Block> =  blocksToRender
+var offsetsY = mutableListOf<Float>(0f)
 
-var idCounter = 0
-//val blocksToRender: MutableList<Pair<Int, @Composable () -> Unit>> = mutableListOf()
 @Composable
 fun OnLoad() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var countBlocks = remember {
-        mutableStateOf(0)
-    }
 
     ModalDrawer(
         drawerState = drawerState,
@@ -28,17 +23,15 @@ fun OnLoad() {
         drawerContentColor = Color(0xFF000000),
         gesturesEnabled = true,
         modifier = Modifier,
-
         drawerContent = {
             DrawerContent(
-                countBlocks,
-                variables = variables
+                scope,
+                drawerState
             )
-
         },
-        content = {
-            WindowContent(scope, drawerState, countBlocks)
+        content =
+        {
+            WindowContent(scope, drawerState)
         }
     )
-
 }
