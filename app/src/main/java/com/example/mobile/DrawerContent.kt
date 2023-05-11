@@ -32,10 +32,12 @@ fun DrawerContent(
             text = "IfBlock(in dev)",
             color = Color(0xFFC48E08),
             shape = CutCornerShape(50),
+
             onClick = {
                 val index = blocksToAdd.size
                 blocksToAdd.add(Block(index, { Condition(index, scope, drawerState, blocksToAdd) }, mutableStateOf("")))
                 offsetsY.add(0.dp)
+                println(offsetsY)
             }
         )
         BlockCard(
@@ -45,7 +47,8 @@ fun DrawerContent(
             onClick = {
                 val index = blocksToAdd.size
                 blocksToAdd.add(Block(index, { InitBlock(index, blocksToAdd) }, mutableStateOf("")))
-
+                offsetsY.add(0.dp)
+                println(offsetsY)
             }
         )
         BlockCard(
@@ -61,6 +64,7 @@ fun DrawerContent(
                 val index = blocksToAdd.size
                 blocksToAdd.add(Block(index, { Assignment(index, blocksToAdd) }, mutableStateOf("")))
                 offsetsY.add(0.dp)
+                println(offsetsY)
             }
         )
         BlockCard(
@@ -70,7 +74,8 @@ fun DrawerContent(
             onClick = {
                 val index = blocksToAdd.size
                 blocksToAdd.add(Block(index, { PrintBlock(index, blocksToAdd) }, mutableStateOf("")))
-
+                offsetsY.add(0.dp)
+                println(offsetsY)
             }
         )
     }

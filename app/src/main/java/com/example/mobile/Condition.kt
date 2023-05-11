@@ -70,6 +70,7 @@ fun Condition(
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     var condition by remember { mutableStateOf("") }
+    blocksToRender[index].serial = index
 
     val localDensity = LocalDensity.current
 
@@ -100,7 +101,7 @@ fun Condition(
             .size(280.dp, 500.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .onGloballyPositioned { coordinates ->
-                offsetsY[index] = with(localDensity) {coordinates.positionInParent().y.toDp()} + with(localDensity){coordinates.size.height.toDp()}/2
+                offsetsY[index] = with(localDensity) {coordinates.positionInParent().y.toDp()}
 
             }
             .pointerInput(Unit)
@@ -112,7 +113,7 @@ fun Condition(
                         offsetY += dragAmount.y
                     },
                     onDragEnd = {
-                        putInPlace(with(LocalDensity) { offsetY.toDp() }, index)
+                        putInPlace(with(LocalDensity) { offsetY.toDp() }, blocksToRender[index].serial)
                         offsetY = 0f
                         offsetX = 0f
                     }

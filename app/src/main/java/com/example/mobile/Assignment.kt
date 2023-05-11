@@ -1,6 +1,7 @@
 package com.example.mobile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,7 +36,9 @@ fun Assignment(index: Int, blocks:MutableList<Block>) {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     val localDensity = LocalDensity.current
+    var isDragged = false
 
+    blocksToRender[index].serial = index
     Card(
         modifier = Modifier
             .padding(15.dp)
@@ -43,22 +46,28 @@ fun Assignment(index: Int, blocks:MutableList<Block>) {
             .size(180.dp, 70.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .onGloballyPositioned { coordinates ->
-                offsetsY[index] = with(localDensity) {coordinates.positionInParent().y.toDp()} + with(localDensity){coordinates.size.height.toDp()}/2
+                if (!isDragged)
+                {
+                    offsetsY[index] = with(localDensity) {coordinates.positionInParent().y.toDp()}
+                }
             }
             .pointerInput(Unit)
             {
-                detectDragGestures(
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
-                    },
-                    onDragEnd = {
-                        putInPlace(with(LocalDensity) { offsetY.toDp() }, index)
+                detectDragGesturesAfterLongPress(
+                    onDragEnd =
+                    {
+                        isDragged = false
+                        putInPlace(with(LocalDensity) { offsetY.toDp() }, blocksToRender[index].serial)
                         offsetY = 0f
                         offsetX = 0f
+                        offsetsY.sort()
                     }
-                )
+                ) {change, dragAmount ->
+                    isDragged = true
+                    change.consume()
+                    offsetX += dragAmount.x
+                    offsetY += dragAmount.y
+                }
             },
         shape = RoundedCornerShape(16.dp),
         backgroundColor = Color.Cyan
@@ -120,5 +129,4 @@ fun Assignment(index: Int, blocks:MutableList<Block>) {
             }
         }
     }
-    println(offsetsY)
 }

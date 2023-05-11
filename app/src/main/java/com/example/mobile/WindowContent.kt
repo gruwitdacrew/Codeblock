@@ -80,9 +80,9 @@ fun WindowContent(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             )
             {
-                for (block in blocksToRender)
+                for (i in 0 until blocksToRender.size)
                 {
-                    block.element()
+                    blocksToRender[i].element()
                 }
             }
             Row(

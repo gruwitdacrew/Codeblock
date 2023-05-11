@@ -8,6 +8,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class Block (var id: Int, var element: @Composable () -> Unit, var expression: MutableState<String>)
+{
+    var serial: Int = 0
+}
 var variables = mutableMapOf<String, String>()
 var blocksToRender: MutableList<Block> =  mutableStateListOf()
 var blocksToAdd: MutableList<Block> =  blocksToRender
