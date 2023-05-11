@@ -5,8 +5,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -29,7 +27,6 @@ private val LightColorPalette = lightColors(
     */
 )
 
-
 @Composable
 fun MobileTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colors = if (darkTheme) {
@@ -37,13 +34,6 @@ fun MobileTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
     } else {
         LightColorPalette
     }
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(
-        color = Color(0xFF03627F)
-    )
-    systemUiController.setStatusBarColor(
-        color = Color(0xFF80BDCD)
-    )
 
     MaterialTheme(
         colors = colors,

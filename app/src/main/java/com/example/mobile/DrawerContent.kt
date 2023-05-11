@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobile.ui.theme.Condition
 import kotlinx.coroutines.CoroutineScope
+import java.util.UUID
+
 @Composable
 fun DrawerContent(
     scope: CoroutineScope,
@@ -29,26 +31,21 @@ fun DrawerContent(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         BlockCard(
-            text = "IfBlock(in dev)",
+            text = "IfBlock",
             color = Color(0xFFC48E08),
             shape = CutCornerShape(50),
-
             onClick = {
-                val index = blocksToAdd.size
+                val index = UUID.randomUUID()
                 blocksToAdd.add(Block(index, { Condition(index, scope, drawerState, blocksToAdd) }, mutableStateOf("")))
-                offsetsY.add(0.dp)
-                println(offsetsY)
             }
         )
         BlockCard(
-            text = "My variable",
+            text = "MyVariable",
             color = Color(0xFFC40869),
             shape = RoundedCornerShape(50),
             onClick = {
-                val index = blocksToAdd.size
+                val index = UUID.randomUUID()
                 blocksToAdd.add(Block(index, { InitBlock(index, blocksToAdd) }, mutableStateOf("")))
-                offsetsY.add(0.dp)
-                println(offsetsY)
             }
         )
         BlockCard(
@@ -61,10 +58,8 @@ fun DrawerContent(
                 bottomEndPercent = 100
             ),
             onClick = {
-                val index = blocksToAdd.size
+                val index = UUID.randomUUID()
                 blocksToAdd.add(Block(index, { Assignment(index, blocksToAdd) }, mutableStateOf("")))
-                offsetsY.add(0.dp)
-                println(offsetsY)
             }
         )
         BlockCard(
@@ -72,10 +67,8 @@ fun DrawerContent(
             color = Color(0xFF03A9F4),
             shape = RectangleShape,
             onClick = {
-                val index = blocksToAdd.size
+                val index = UUID.randomUUID()
                 blocksToAdd.add(Block(index, { PrintBlock(index, blocksToAdd) }, mutableStateOf("")))
-                offsetsY.add(0.dp)
-                println(offsetsY)
             }
         )
     }

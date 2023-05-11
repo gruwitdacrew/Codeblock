@@ -6,15 +6,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import java.util.UUID
 
-data class Block (var id: Int, var element: @Composable () -> Unit, var expression: MutableState<String>)
+data class Block (val id: UUID = UUID.randomUUID(), var element: @Composable () -> Unit, var expression: MutableState<String>)
 {
-    var serial: Int = 0
+    var offset: Dp = 0.dp
 }
 var variables = mutableMapOf<String, String>()
-var blocksToRender: MutableList<Block> =  mutableStateListOf()
-var blocksToAdd: MutableList<Block> =  blocksToRender
-var offsetsY = mutableListOf<Dp>()
+var blocks: MutableList<Block> =  mutableStateListOf()
+var blocksToAdd: MutableList<Block> =  blocks
+var offsetsY = mutableListOf<Float>(0f)
 
 @Composable
 fun OnLoad() {
