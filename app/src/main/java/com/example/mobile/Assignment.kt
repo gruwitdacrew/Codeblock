@@ -28,11 +28,14 @@ import androidx.compose.ui.unit.sp
 import java.util.UUID
 
 @Composable
-fun Assignment(blockId: UUID, blocks:MutableList<Block>) {
+fun Assignment(index: UUID, blocks:MutableList<Block>) {
     var variable by remember { mutableStateOf("") }
     var expression by remember { mutableStateOf("") }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
+
+    val blockIndex = blocks.find { it.id == index }
+    val blockId = blocks.indexOf(blockIndex)
 
     Card(
         modifier = Modifier
@@ -54,11 +57,13 @@ fun Assignment(blockId: UUID, blocks:MutableList<Block>) {
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+
             TextField(
                 value = variable,
                 onValueChange = { newText ->
                     variable = newText
-//                    blocks[blockId].expression.value = "=$variable=$expression";
+
+                    blocks[blockId].expression.value = "=$variable=$expression";
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier
@@ -75,7 +80,7 @@ fun Assignment(blockId: UUID, blocks:MutableList<Block>) {
                 value = expression,
                 onValueChange = { newText ->
                     expression = newText
-//                    blocks[index].expression.value = "=$variable=$expression";
+                    blocks[blockId].expression.value = "=$variable=$expression";
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier
@@ -84,7 +89,7 @@ fun Assignment(blockId: UUID, blocks:MutableList<Block>) {
             )
             IconButton(
                 onClick = {
-                    handleBlockDelete(blockId, blocks)
+                    handleBlockDelete(index, blocks)
                 },
                 modifier = Modifier.padding(start = 8.dp) // Изменяем отступ с помощью start
             ) {
