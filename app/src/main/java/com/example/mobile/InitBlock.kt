@@ -17,10 +17,12 @@ import androidx.compose.ui.unit.dp
 import java.util.UUID
 
 @Composable
-fun InitBlock(blockId: UUID, blocks:MutableList<Block>,
+fun InitBlock(index: UUID, blocks:MutableList<Block>,
 ) {
     var key by remember { mutableStateOf("") }
 
+    val blockIndex = blocks.find { it.id == index }
+    val blockId = blocks.indexOf(blockIndex)
 
     Card(
         modifier = Modifier
@@ -38,14 +40,14 @@ fun InitBlock(blockId: UUID, blocks:MutableList<Block>,
                     value = key,
                     onValueChange = {
                         key = it.trim() // Удаляем лишние пробелы в начале и конце
-//                        blocks[blockId].expression.value = "=$key=0"
+                        blocks[blockId].expression.value = "=$key=0"
                     },
                     label = { Text("Название переменной") },
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(
                     onClick = {
-                        handleBlockDelete(blockId, blocks)
+                        handleBlockDelete(index, blocks)
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {

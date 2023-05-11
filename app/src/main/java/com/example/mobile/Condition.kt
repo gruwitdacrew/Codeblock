@@ -1,19 +1,24 @@
 package com.example.mobile.ui.theme
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DrawerState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
@@ -77,30 +82,33 @@ fun Condition(
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     var condition by remember { mutableStateOf("") }
-
+    val blockId = blocks.find { it.id == index }
+    val blockIndex = blocks.indexOf(blockId)
     for(i in ifBlocksToRender){
         LaunchedEffect(i.expression.value){
-//            blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-//            println(blocks[index].expression.value)
+            blocks[blockIndex].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+            println(blocks[blockIndex].expression.value)
         }
     }
     for(i in elseBlocksToRender){
         LaunchedEffect(i.expression.value){
-//            blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-//            println(blocks[index].expression.value)
-        }
+            blocks[blockIndex].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+            println(blocks[blockIndex].expression.value)        }
     }
     LaunchedEffect(condition){
-//        blocks[index].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-//        println(blocks[index].expression.value)
-    }
+        blocks[blockIndex].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+        println(blocks[blockIndex].expression.value)}
 
     Card(
         modifier = Modifier
             .padding(15.dp)
-            .size(280.dp, 500.dp)
+            .border(2.dp, Color.Black, shape = RoundedCornerShape(5.dp))
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .defaultMinSize( 225.dp, 480.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .pointerInput(Unit)
+
             {
                 detectDragGestures { change, dragAmount ->
                     change.consume()

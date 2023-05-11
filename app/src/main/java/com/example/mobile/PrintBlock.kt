@@ -1,12 +1,8 @@
 package com.example.mobile
-
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -17,18 +13,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import java.util.UUID
 
 
 @Composable
 fun PrintBlock(
-    blockId: UUID,
-    blocks:MutableList<Block>
+    index: UUID,
+    blocks: MutableList<Block>
 ) {
     var text by remember { mutableStateOf("") }
+
+    val blockIndex = blocks.find { it.id == index }
+    val blockId = blocks.indexOf(blockIndex)
 
     Card(
         modifier = Modifier
@@ -48,7 +45,8 @@ fun PrintBlock(
                     value = text,
                     onValueChange = { newText ->
                         text = newText
-//                        blocks[blockId].expression.value = "/$text"
+                        blocks[blockId].expression.value = "/$text"
+                        println(blocks[blockId].expression.value)
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -57,7 +55,7 @@ fun PrintBlock(
                 )
                 IconButton(
                     onClick = {
-                        handleBlockDelete(blockId, blocks)
+                        handleBlockDelete(index, blocks)
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
