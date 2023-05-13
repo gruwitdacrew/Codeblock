@@ -40,15 +40,12 @@ fun WindowContent(
         )
         {
             LazyColumn(
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
                     .background(Color(0xFFE7ECE6))
-                    .border(width = 3.dp, color = Color.Black)
-                    .onGloballyPositioned { coordinates ->
-                        height = (coordinates.size.height * 0.85).dp
-                        width = (coordinates.size.width * 0.8).dp
-                    },
+                    .border(width = 3.dp, color = Color.Black),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             )
             {

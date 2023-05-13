@@ -3,6 +3,8 @@ package com.example.mobile
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -12,16 +14,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import java.util.UUID
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InitBlock(index: UUID, blocks:MutableList<Block>,
 ) {
@@ -30,11 +37,10 @@ fun InitBlock(index: UUID, blocks:MutableList<Block>,
     var offsetY by remember { mutableStateOf(0f) }
 
     val localDensity = LocalDensity.current
-    var isDragged = false
-    val blockIndex = blocks.find { it.id == index }
-    var blockId by remember {
-        mutableStateOf(blocks.indexOf(blocks.find { it.id == index }))
-    }
+    val blockId = blocks.indexOf(blocks.find { it.id == index })
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     Card(
         modifier = Modifier
@@ -42,19 +48,14 @@ fun InitBlock(index: UUID, blocks:MutableList<Block>,
             .fillMaxWidth()
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .onGloballyPositioned { coordinates ->
-                blocks[blockId].offset = with(localDensity) {coordinates.positionInParent().y.toDp()}
+                blocks[blockId].offset.value = with(localDensity) { coordinates.positionInParent().y.toDp() + coordinates.size.height.toDp()/2 }
             }
             .pointerInput(Unit)
             {
                 detectDragGesturesAfterLongPress(
-                    onDragStart =
-                    {
-                        isDragged = true
-                    },
                     onDragEnd =
                     {
-                        isDragged = false
-                        putInPlace(with(localDensity) {offsetY.toDp()}, blockId, blocks)
+                        putInPlace(with(localDensity) {offsetY.toDp()}, index, blocks)
                         offsetY = 0f
                         offsetX = 0f
                     }
@@ -78,6 +79,9 @@ fun InitBlock(index: UUID, blocks:MutableList<Block>,
                         key = it.trim() // Удаляем лишние пробелы в начале и конце
                         blocks[blockId].expression.value = "=$key=0"
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
                     label = { Text("Название переменной") },
                     modifier = Modifier.weight(1f)
                 )

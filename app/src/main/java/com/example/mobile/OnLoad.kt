@@ -10,12 +10,11 @@ import java.util.UUID
 
 data class Block (val id: UUID = UUID.randomUUID(), var element: @Composable () -> Unit, var expression: MutableState<String>)
 {
-    var offset: Dp = 0.dp
+    var offset = mutableStateOf(0.dp)
 }
 var variables = mutableMapOf<String, String>()
 var blocks: MutableList<Block> =  mutableStateListOf()
 var blocksToAdd: MutableList<Block> =  blocks
-var offsetsY = mutableListOf<Float>(0f)
 
 @Composable
 fun OnLoad() {

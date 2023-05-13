@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DrawerState
@@ -42,9 +44,13 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import com.example.mobile.*
 import java.util.UUID
 
@@ -69,6 +75,7 @@ fun getExpression(
     else return ""
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Condition(
     index: UUID,
@@ -81,8 +88,9 @@ fun Condition(
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     var condition by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
-    var isDragged = false
     val localDensity = LocalDensity.current
 
     val blockId = blocks.indexOf(blocks.find { it.id == index })
@@ -110,19 +118,14 @@ fun Condition(
             .defaultMinSize( 225.dp, 480.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .onGloballyPositioned { coordinates ->
-                com.example.mobile.blocks[blockId].offset = with(localDensity) {coordinates.positionInParent().y.toDp()}
+                blocks[blockId].offset.value = with(localDensity) { coordinates.positionInParent().y.toDp() + coordinates.size.height.toDp()/2 }
             }
             .pointerInput(Unit)
             {
                 detectDragGesturesAfterLongPress(
-                    onDragStart =
-                    {
-                        isDragged = true
-                    },
                     onDragEnd =
                     {
-                        isDragged = false
-                        putInPlace(with(localDensity) {offsetY.toDp()}, blockId, blocks)
+                        putInPlace(with(localDensity) { offsetY.toDp() }, index, blocks)
                         offsetY = 0f
                         offsetX = 0f
                     }
@@ -153,6 +156,9 @@ fun Condition(
                         condition = newText
                     },
                     textStyle = TextStyle(fontSize = 20.sp),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
                     modifier = Modifier
                         .background(Color.Transparent)
                         .weight(2f)
@@ -165,7 +171,7 @@ fun Condition(
             ) {
                 ifBlocksToRender.forEach{block ->
                     block.element()
-                    println("${block.id} ${block.offset}")
+                    println("${block.id} ${block.offset.value}")
                 }
                 Button(
                     onClick = {
@@ -208,4 +214,3 @@ fun Condition(
         }
     }
 }
-
