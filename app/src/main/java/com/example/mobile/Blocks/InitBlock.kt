@@ -89,6 +89,8 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                         onClick = {
                             selectedType = "Int"
                             expanded = false
+                            key = key.trim()
+                            blocks[blockId].expression.value = "i;Int;$key"
                         }
                     ) {
                         Text("Int")
@@ -97,6 +99,9 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                         onClick = {
                             selectedType = "String"
                             expanded = false
+                            key = key.trim()
+                            blocks[blockId].expression.value = "i;String;$key"
+                            println("i;$selectedType;$key")
                         }
                     ) {
                         Text("String")
@@ -105,6 +110,8 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                         onClick = {
                             selectedType = "Bool"
                             expanded = false
+                            key = key.trim()
+                            blocks[blockId].expression.value = "i;Bool;$key"
                         }
                     ) {
                         Text("Bool")
@@ -113,6 +120,8 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                         onClick = {
                             selectedType = "Array<Int>"
                             expanded = false
+                            key = key.trim()
+                            blocks[blockId].expression.value = "i;Array<Int>;$key"
                         }
                     ) {
                         Text("Array<Int>")
@@ -121,6 +130,8 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                         onClick = {
                             selectedType = "Array<String>"
                             expanded = false
+                            key = key.trim()
+                            blocks[blockId].expression.value = "i;Array<String>;$key"
                         }
                     ) {
                         Text("Array<String>")
@@ -129,54 +140,48 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                         onClick = {
                             selectedType = "Array<Bool>"
                             expanded = false
+                            key = key.trim()
+                            blocks[blockId].expression.value = "i;Array<Bool>;$key"
                         }
                     ) {
                         Text("Array<Bool>")
                     }
-                    //DropdownMenuItem(
-                    //                        onClick = {
-                    //                            selectedType = "Array"
-                    //                            expanded = false
-                    //                            key = key.trim()
-                    //                            blocks[blockId].expression.value = "i;Array;$key"
-                    //                        }
-                    //                    ) {
-                    //                        Text("Array")
-                    //                    }
                 }
-                Button(
-                    onClick = { expanded = true },
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text(selectedType.ifBlank { "Select Type" })
+                    Button(
+                        onClick = { expanded = true },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(selectedType.ifBlank { "Select Type" })
+                    }
                 }
-            }
-            TextField(
-                value = key,
-                onValueChange = {
+                TextField(
+                    value = key,
+                    onValueChange = {
 //                    key = it.trim()
 //                    blocks[blockId].expression.value = "i$key"
-                    key = it.trim()
-                    println("i;$selectedType;$key")
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                    }
-                ),
-                label = { Text("Название переменной") },
-                modifier = Modifier.weight(1f)
-            )
-            IconButton(
-                onClick = {
-                    handleBlockDelete(index, blocks)
-                },
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Icon(Icons.Default.Delete, contentDescription = "delete")
+                        key = it.trim()
+                        blocks[blockId].expression.value = "i;$selectedType;$key"
+                        println("i;$selectedType;$key")
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        }
+                    ),
+                    label = { Text("Название переменной") },
+                    modifier = Modifier.weight(1f)
+                )
+
+                IconButton(
+                    onClick = {
+                        handleBlockDelete(index, blocks)
+                    },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = "delete")
+                }
             }
         }
     }
-}
