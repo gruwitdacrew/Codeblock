@@ -1,5 +1,6 @@
 package com.example.mobile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -10,8 +11,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobile.Utils.start
@@ -27,31 +32,38 @@ fun WindowContent(
 ) {
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
-    var lines = remember{ mutableStateListOf<String>() }
+    val lines = remember{ mutableStateListOf<String>() }
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = { ModalContent(lines) }
     )
     {
+//        Image(painter = painterResource(id = R.xml.), contentDescription = null,
+//            modifier = Modifier
+//                .height(160.dp)
+//                .width(160.dp)
+//                .padding(32.dp),
+//        )
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .border(width = 3.dp, color = Color.Black)
+                .border(width = 3.dp, color = Color.Black),
         )
         {
             LazyColumn(
-
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
-                    .background(Color(0xFFE7ECE6))
-                    .border(width = 3.dp, color = Color.Black),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                    .paint(
+                        painter = painterResource(id = R.drawable.screen),
+                        contentScale = ContentScale.FillBounds
+                    )
+                    .border(width = 3.dp, color = Color.Black)
             )
             {
-                items(blocks) { block ->
+                items(items = blocks, key = {it.id}) { block ->
                     block.element()
-                  //  println(block)
+                    //  println(block)
                 }
             }
 
@@ -59,7 +71,10 @@ fun WindowContent(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .background(color = Color(0xFF378AA3)),
+                    .background(
+                        color = Color(0xFFA7C3FF),
+                    )
+                    .border(width = 3.dp, color = Color.Black),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly,
             )
@@ -73,7 +88,6 @@ fun WindowContent(
                             if (item.value.length > 1){
                                 start(item.value,lines)
                             }
-
                         }
 
                         // Отобразить модальное окно
@@ -84,10 +98,10 @@ fun WindowContent(
                     modifier = Modifier
                         .padding(15.dp)
                         .size(100.dp, 60.dp),
-                    backgroundColor = Color.Black,
+                    backgroundColor = Color(0xFF000000),
                     shape = RoundedCornerShape(15),
                 ) {
-                    Text(text = "Консоль", color = Color(0xFFFFFFFF), fontSize = 12.sp)
+                    Image(painter = painterResource(id = R.drawable.compile), contentDescription = null, contentScale = ContentScale.Fit)
                 }
                 Button(
                     onClick = {
@@ -98,10 +112,10 @@ fun WindowContent(
                         .padding(15.dp)
                         .size(60.dp, 60.dp),
                     colors = ButtonDefaults.buttonColors(Color(0xFF000000)),
-                    shape = RoundedCornerShape(15),
+                    shape = RoundedCornerShape(55),
                 )
                 {
-                    Text(text = "+", color = Color(0xFFFFFFFF), fontSize = 24.sp)
+                    Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
                 }
             }
         }

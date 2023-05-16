@@ -20,7 +20,8 @@ fun BlockCard(
     color: Color,
     shape: Shape,
     onClick: () -> Unit
-) {
+)
+{
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -43,14 +44,14 @@ fun BlockCard(
 fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>)
 {
     val index = blocks.indexOf(blocks.find { it.id == blockId })
-    println("**********")
-    for (j in 0 until blocks.size)
-    {
-        println(blocks[j].offset.value)
-    }
-    println("**********")
+//    println("**********")
+//    for (j in 0 until blocks.size)
+//    {
+//        println(blocks[j].offset.value)
+//    }
+//    println("**********")
 
-    if (offsetY>0.dp)
+    if (offsetY > 0.dp)
     {
         for (i in index+1 until blocks.size)
         {
@@ -58,12 +59,12 @@ fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>)
             {
                 blocks.add(i, blocks[index])
                 blocks.removeAt(index)
-                println("**********")
-                for (j in 0 until blocks.size)
-                {
-                    println(blocks[j].offset.value)
-                }
-                println("**********")
+//                println("**********")
+//                for (j in 0 until blocks.size)
+//                {
+//                    println(blocks[j].offset.value)
+//                }
+//                println("**********")
                 return
             }
         }
@@ -78,24 +79,23 @@ fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>)
             {
                 blocks.add(i+1, blocks[index])
                 blocks.removeAt(index+1)
-                println("**********")
-                for (j in 0 until blocks.size)
-                {
-                    println(blocks[j].offset.value)
-                }
-                println("**********")
+//                println("**********")
+//                for (j in 0 until blocks.size)
+//                {
+//                    println(blocks[j].offset.value)
+//                }
+//                println("**********")
                 return
             }
-
         }
         blocks.add(0, blocks[index])
         blocks.removeAt(index+1)
     }
-    println("**********")
-    for (j in 0 until blocks.size)
-    {
-        println(blocks[j].offset.value)
-    }
-    println("**********")
+//    println("**********")
+//    for (j in 0 until blocks.size)
+//    {
+//        println(blocks[j].offset.value)
+//    }
+//    println("**********")
     return
 }

@@ -3,12 +3,9 @@ package com.example.mobile.ui.theme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -31,80 +28,51 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.ImeAction
 import com.example.mobile.*
 import com.example.mobile.R
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
-fun getIfExpression(
-    ifBlocks:MutableList<Block>,
-    elseBlocks:MutableList<Block>,
+fun getWhileExpression(
+    whileBlocks:MutableList<Block>,
     condition: String
 ):String{
-    var ifActions = mutableListOf<String>(); var elseActions = mutableListOf<String>()
-    var indexOfElse = 0;
-    for(i in ifBlocks){
-        ifActions.add(i.expression.value)
-        indexOfElse+=i.expression.value.length
+    var actions = mutableListOf<String>()
+    for(i in whileBlocks){
+        actions.add(i.expression.value)
     }
-    for(i in elseBlocks){
-        elseActions.add(i.expression.value)
-    }
-    if(ifActions.size > 0 && elseActions.size>0){
-        return "?${indexOfElse};${condition}:${Json.encodeToString(ifActions)}:${Json.encodeToString(ifActions)}"
-    }
-    else if(ifActions.size > 0){
-        return "?${-1};${condition}:${Json.encodeToString(ifActions)}"
-    }
-    else return ""
+    if(actions.size > 0) return "w${condition}:${Json.encodeToString(actions)}"
+    else return "";
 }
 
 @Composable
-fun Condition(
+fun While(
     index: UUID,
     scope: CoroutineScope,
     drawerState: DrawerState,
     blocks:MutableList<Block>
 ) {
-    val ifBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
-    val elseBlocksToRender: MutableList<Block> =  remember { mutableStateListOf() }
+    val whileBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
     var condition by rememberSaveable { mutableStateOf("") }
 
-    val blockId by remember {
-        mutableStateOf(blocks.indexOf(blocks.find { it.id == index }))
-    }
-
-    LaunchedEffect(blockId){
-        println(index.toString() + " " + blocks.size)
-    }
-
-    for(i in ifBlocksToRender){
+    val blockId = blocks.indexOf(blocks.find { it.id == index })
+    for(i in whileBlocksToRender){
         LaunchedEffect(i.expression.value){
-            blocks[blockId].expression.value = getIfExpression(ifBlocksToRender,elseBlocksToRender, condition)
+            blocks[blockId].expression.value = getWhileExpression(whileBlocksToRender, condition)
+            println(blocks[blockId].expression.value)
         }
     }
-    for(i in elseBlocksToRender){
-        LaunchedEffect(i.expression.value){
-            blocks[blockId].expression.value = getIfExpression(ifBlocksToRender,elseBlocksToRender, condition) }
-    }
-
-
     BlockSample(index = index, blocks = blocks, shape = RoundedCornerShape(5), inside =
-    @Composable
     {
         Column(
             modifier = Modifier
@@ -114,6 +82,28 @@ fun Condition(
                 ),
             verticalArrangement = Arrangement.SpaceBetween
         ){
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically,
+//            ){
+//                Text(
+//                    text = "While",
+//                    fontSize = 25.sp,
+//                    modifier = Modifier.weight(1f),
+//                    textAlign = TextAlign.Center
+//                )
+//                TextField(
+//                    value = condition,
+//                    onValueChange = {newText ->
+//                        condition = newText
+//                        blocks[blockId].expression.value = getWhileExpression(whileBlocksToRender, condition)
+//                    },
+//                    textStyle = TextStyle(fontSize = 20.sp),
+//                    modifier = Modifier
+//                        .background(Color.Transparent)
+//                        .weight(2f)
+//                )
+//            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,46 +117,30 @@ fun Condition(
                 Text(
                     modifier = Modifier
                         .padding(end = 20.dp),
-                    text = "if",
+                    text = "while",
                     fontSize = 30.sp,
                     color = Color.White,
                     fontFamily = FontFamily(Font(R.font.fedra_sans)),
                     textAlign = TextAlign.Center
                 )
-                TextFieldSample(size = 400.dp, onValueChange = {newText ->
+                TextFieldSample(size = 300.dp, onValueChange = {newText ->
                     condition = newText
-                    blocks[blockId].expression.value = getIfExpression(ifBlocksToRender,elseBlocksToRender, condition)
+                    blocks[blockId].expression.value = getWhileExpression(whileBlocksToRender, condition)
                 })
-//                TextField(
-//                    value = condition,
-//                    onValueChange = {newText ->
-//                        condition = newText
-//                    },
-//                    textStyle = TextStyle(fontSize = 20.sp),
-//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-//                    keyboardActions = KeyboardActions(
-//                        onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
-//                    modifier = Modifier
-//                        .background(Color.Transparent)
-//                        .weight(2f)
-//                )
             }
             Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
-            )
-            {
-                ifBlocksToRender.forEach{block ->
+            ) {
+                whileBlocksToRender.forEach{block ->
                     block.element()
-                    println("${block.id} ${block.offset.value}")
                 }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
-                        blocksToAdd = ifBlocksToRender
+                        blocksToAdd = whileBlocksToRender
                         scope.launch{drawerState.open()}
                     },
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
@@ -174,47 +148,6 @@ fun Condition(
                 {
                     Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = 2.dp, color = Color.Black, shape = RectangleShape
-                    )
-                    .padding(horizontal = 30.dp),
-                verticalAlignment = Alignment.CenterVertically
-            )
-            {
-                Text(
-                    text = "else",
-                    fontSize = 30.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.fedra_sans)),
-                    textAlign = TextAlign.Center
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                elseBlocksToRender.forEach{block ->
-                    block.element()
-                    println("${block.id} ${block.offset}")
-                }
-                Button(
-                    modifier = Modifier
-                        .size(60.dp, 35.dp),
-                    onClick = {
-                    blocksToAdd = elseBlocksToRender
-                    scope.launch{drawerState.open()}},
-                    colors = ButtonDefaults.buttonColors(Color.Transparent),
-                )
-                {
-                    Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
-                }
-
             }
             IconButton(
                 onClick = {
@@ -225,5 +158,6 @@ fun Condition(
                 Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
             }
         }
-    })
+    }
+    )
 }
