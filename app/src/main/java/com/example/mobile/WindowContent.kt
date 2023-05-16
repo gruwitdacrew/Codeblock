@@ -40,19 +40,16 @@ fun WindowContent(
         )
         {
             LazyColumn(
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
                     .background(Color(0xFFE7ECE6))
-                    .border(width = 3.dp, color = Color.Black)
-                    .onGloballyPositioned { coordinates ->
-                        height = (coordinates.size.height * 0.85).dp
-                        width = (coordinates.size.width * 0.8).dp
-                    },
+                    .border(width = 3.dp, color = Color.Black),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             )
             {
-                items(blocksToRender) { block ->
+                items(blocks) { block ->
                     block.element()
                 }
             }
@@ -68,7 +65,7 @@ fun WindowContent(
             {
                 FloatingActionButton(
                     onClick = {
-                        val finalTasks = blocksToRender.toList();
+                        val finalTasks = blocks.toList();
                         lines.clear()
 
                         for ((index, element, item) in finalTasks){
@@ -93,7 +90,7 @@ fun WindowContent(
                 }
                 Button(
                     onClick = {
-                        blocksToAdd = blocksToRender
+                        blocksToAdd = blocks
                         scope.launch { drawerState.open() }
                     },
                     modifier = Modifier

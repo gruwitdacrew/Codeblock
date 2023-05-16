@@ -5,6 +5,11 @@ import com.example.mobile.variables
 
 fun start(item:String, lines:MutableList<String>){
     when(item[0]){
+        'i' -> {
+            val variableName = item.substring(1)
+            variables[variableName] = ""
+        }
+
         '=' -> {
             val taskNow = item.substring(1).split("=", limit = 2);
             variables[taskNow[0]] = RPS.fromRPS(variables, RPS.toRPS(taskNow[1]))
@@ -40,6 +45,15 @@ fun start(item:String, lines:MutableList<String>){
         '/' -> {
             val taskNow = item.substring(1)
             lines.add(RPS.calculate(variables,taskNow))
+        }
+        //Теперь нужно сделать обработку для функций
+        '@' ->{
+            val taskNow = item.substring(1)
+            val function = taskNow.split("(", limit=2)[0]
+
+            val args = taskNow.split("(", limit=2)[1].split(")", limit=2)[0].split(",")
+            val argsValues = mutableListOf<String>()
+
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.example.mobile
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -17,16 +19,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.UUID
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Assignment(index: UUID, blocks:MutableList<Block>) {
     var variable by remember { mutableStateOf("") }
@@ -34,8 +44,12 @@ fun Assignment(index: UUID, blocks:MutableList<Block>) {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
 
-    val blockIndex = blocks.find { it.id == index }
-    val blockId = blocks.indexOf(blockIndex)
+    val blockId = blocks.indexOf(blocks.find { it.id == index })
+
+    val localDensity = LocalDensity.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
 
     Card(
         modifier = Modifier
@@ -43,11 +57,26 @@ fun Assignment(index: UUID, blocks:MutableList<Block>) {
             .fillMaxWidth(1f)
             .size(180.dp, 70.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
+            .onGloballyPositioned { coordinates ->
+                blocks[blockId].offset.value = with(localDensity) { coordinates.positionInParent().y.toDp() + coordinates.size.height.toDp() / 2 }
+            }
+            .pointerInput(Unit)
+            {
+                detectDragGesturesAfterLongPress(
+                    onDragStart =
+                    {
+                        
+                    },
+                    onDragEnd =
+                    {
+                        putInPlace(with(localDensity) { offsetY.toDp() }, index, blocks)
+                        offsetY = 0f
+                        offsetX = 0f
+                    }
+                ) { change, dragAmount ->
                     change.consume()
-                    if ((offsetX.dp + dragAmount.x.dp + 225.dp < width) && (offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
-                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
+                    offsetX += dragAmount.x
+                    offsetY += dragAmount.y
                 }
             },
         shape = RoundedCornerShape(16.dp),
@@ -62,10 +91,12 @@ fun Assignment(index: UUID, blocks:MutableList<Block>) {
                 value = variable,
                 onValueChange = { newText ->
                     variable = newText
-
                     blocks[blockId].expression.value = "=$variable=$expression";
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
                 modifier = Modifier
                     .weight(1f)
                     .background(Color.Transparent)
@@ -83,6 +114,9 @@ fun Assignment(index: UUID, blocks:MutableList<Block>) {
                     blocks[blockId].expression.value = "=$variable=$expression";
                 },
                 textStyle = TextStyle(fontSize = 20.sp),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
                 modifier = Modifier
                     .weight(2.5f)
                     .background(Color.Transparent)

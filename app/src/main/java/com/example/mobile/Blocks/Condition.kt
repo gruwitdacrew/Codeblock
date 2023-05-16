@@ -3,6 +3,7 @@ package com.example.mobile.ui.theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DrawerState
@@ -38,15 +41,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.Block
-import com.example.mobile.blocksToAdd
-import com.example.mobile.blocksToRender
-import com.example.mobile.height
-import com.example.mobile.width
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
-import com.example.mobile.handleBlockDelete
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import com.example.mobile.*
 import java.util.UUID
 
 fun getExpression(
@@ -70,6 +75,7 @@ fun getExpression(
     else return ""
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Condition(
     index: UUID,
@@ -82,22 +88,26 @@ fun Condition(
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     var condition by remember { mutableStateOf("") }
-    val blockId = blocks.find { it.id == index }
-    val blockIndex = blocks.indexOf(blockId)
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    val localDensity = LocalDensity.current
+
+    val blockId = blocks.indexOf(blocks.find { it.id == index })
     for(i in ifBlocksToRender){
         LaunchedEffect(i.expression.value){
-            blocks[blockIndex].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-            println(blocks[blockIndex].expression.value)
+            blocks[blockId].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+            println(blocks[blockId].expression.value)
         }
     }
     for(i in elseBlocksToRender){
         LaunchedEffect(i.expression.value){
-            blocks[blockIndex].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-            println(blocks[blockIndex].expression.value)        }
+            blocks[blockId].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+            println(blocks[blockId].expression.value)        }
     }
     LaunchedEffect(condition){
-        blocks[blockIndex].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
-        println(blocks[blockIndex].expression.value)}
+        blocks[blockId].expression.value = getExpression(ifBlocksToRender,elseBlocksToRender, condition)
+        println(blocks[blockId].expression.value)}
 
     Card(
         modifier = Modifier
@@ -107,13 +117,22 @@ fun Condition(
             .fillMaxHeight()
             .defaultMinSize( 225.dp, 480.dp)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
+//            .onGloballyPositioned { coordinates ->
+//                blocks[blockId].offset.value = with(localDensity) { coordinates.positionInParent().y.toDp() + coordinates.size.height.toDp()/2 }
+//            }
             .pointerInput(Unit)
-
             {
-                detectDragGestures { change, dragAmount ->
+                detectDragGesturesAfterLongPress(
+                    onDragEnd =
+                    {
+                        putInPlace(with(localDensity) { offsetY.toDp() }, index, blocks)
+                        offsetY = 0f
+                        offsetX = 0f
+                    }
+                ) {change, dragAmount ->
                     change.consume()
-                    if ((offsetX.dp + dragAmount.x.dp + 225.dp < width) && (offsetX + dragAmount.x > 0)) offsetX += dragAmount.x
-                    if ((offsetY.dp + dragAmount.y.dp < height - 10.dp) && (offsetY + dragAmount.y > 0)) offsetY += dragAmount.y
+                    offsetX += dragAmount.x
+                    offsetY += dragAmount.y
                 }
             },
         backgroundColor = Color.Cyan
@@ -137,6 +156,9 @@ fun Condition(
                         condition = newText
                     },
                     textStyle = TextStyle(fontSize = 20.sp),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
                     modifier = Modifier
                         .background(Color.Transparent)
                         .weight(2f)
@@ -149,6 +171,7 @@ fun Condition(
             ) {
                 ifBlocksToRender.forEach{block ->
                     block.element()
+                    println("${block.id} ${block.offset.value}")
                 }
                 Button(
                     onClick = {
@@ -170,6 +193,7 @@ fun Condition(
             ) {
                 elseBlocksToRender.forEach{block ->
                     block.element()
+                    println("${block.id} ${block.offset}")
                 }
                 Button(onClick = {
                     blocksToAdd = elseBlocksToRender
@@ -190,4 +214,3 @@ fun Condition(
         }
     }
 }
-

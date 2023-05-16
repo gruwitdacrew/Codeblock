@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.UUID
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -39,51 +40,62 @@ fun BlockCard(
         }
     }
 }
-fun putInPlace(offsetY: Dp, index: Int)
+fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>)
 {
-    println(blocksToRender)
-    if (offsetY.value>0)
+    val index = blocks.indexOf(blocks.find { it.id == blockId })
+    println("**********")
+    for (j in 0 until blocks.size)
     {
-        for (i in index+1 until offsetsY.size)
+        println(blocks[j].offset.value)
+    }
+    println("**********")
+
+    if (offsetY>0.dp)
+    {
+        for (i in index+1 until blocks.size)
         {
-            if (offsetsY[index] + offsetY.value <= offsetsY[i])
+            if (blocks[index].offset.value <= blocks[i].offset.value)
             {
-                blocksToRender = arrayListOf(
-                    *blocksToRender.slice(0 until index).toTypedArray(),
-                    *blocksToRender.slice(index+1 until i).toTypedArray(),
-                    blocksToRender[index],
-                    *blocksToRender.slice(i until blocksToRender.size).toTypedArray())
-                println(blocksToRender)
+                blocks.add(i, blocks[index])
+                blocks.removeAt(index)
+                println("**********")
+                for (j in 0 until blocks.size)
+                {
+                    println(blocks[j].offset.value)
+                }
+                println("**********")
                 return
             }
         }
-        blocksToRender = arrayListOf(
-            *blocksToRender.slice(0 until index).toTypedArray(),
-            *blocksToRender.slice(index+1 until blocksToRender.size).toTypedArray(),
-            blocksToRender[index])
-        println(blocksToRender)
+        blocks.add(blocks[index])
+        blocks.removeAt(index)
     }
     else
     {
         for (i in index - 1 downTo 0)
         {
-            if (offsetsY[index] + offsetY.value >= offsetsY[i])
+            if (blocks[index].offset.value >= blocks[i].offset.value)
             {
-                blocksToRender = arrayListOf(
-                    *blocksToRender.slice(0 until i+1).toTypedArray(),
-                    blocksToRender[index],
-                    *blocksToRender.slice(i+1 until index).toTypedArray(),
-                    *blocksToRender.slice(index+1 until blocksToRender.size).toTypedArray())
-                println(blocksToRender)
+                blocks.add(i+1, blocks[index])
+                blocks.removeAt(index+1)
+                println("**********")
+                for (j in 0 until blocks.size)
+                {
+                    println(blocks[j].offset.value)
+                }
+                println("**********")
                 return
             }
 
         }
-        blocksToRender = arrayListOf(
-            blocksToRender[index],
-            *blocksToRender.slice(0 until index).toTypedArray(),
-            *blocksToRender.slice(index+1 until blocksToRender.size).toTypedArray())
-        println(blocksToRender)
+        blocks.add(0, blocks[index])
+        blocks.removeAt(index+1)
     }
+    println("**********")
+    for (j in 0 until blocks.size)
+    {
+        println(blocks[j].offset.value)
+    }
+    println("**********")
     return
 }
