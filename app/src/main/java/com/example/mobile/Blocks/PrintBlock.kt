@@ -38,21 +38,14 @@ import com.example.mobile.ui.theme.print_color_2
 import java.util.UUID
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PrintBlock(
     index: UUID,
     blocks: MutableList<Block>
 ) {
     var text by rememberSaveable { mutableStateOf("") }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
 
     val blockId = blocks.indexOf(blocks.find { it.id == index })
-    val localDensity = LocalDensity.current
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
 
     BlockSample(index = index, blocks = blocks, shape = RoundedCornerShape(50), inside =
     {
@@ -64,21 +57,6 @@ fun PrintBlock(
             verticalAlignment = Alignment.CenterVertically
         )
         {
-//            TextField(
-//                value = text,
-//                onValueChange = { newText ->
-//                    text = newText
-//                    blocks[blockId].expression.value = "/$text"
-//                    println(blocks[blockId].expression.value)
-//                },
-//                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-//                keyboardActions = KeyboardActions(
-//                    onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .padding(end = 16.dp)
-//                    .background(Color.Transparent)
-//            )
             Text("Print",
                 modifier = Modifier
                     .padding(14.dp)
@@ -88,17 +66,17 @@ fun PrintBlock(
                 fontFamily = FontFamily(Font(R.font.fedra_sans)),
                 textAlign = TextAlign.Center)
 
-            TextFieldSample(size = 250.dp, onValueChange = { newText ->
+            TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                 text = newText
                 blocks[blockId].expression.value = "/$text"
                 println(blocks[blockId].expression.value)},
             )
             IconButton(
                 onClick = {
-                    handleBlockDelete(index, blocks)
+                    blocks[blockId].visibleState.targetState = false
                 },
                 modifier = Modifier
-                    .width(60.dp)
+                    .defaultMinSize(minWidth = 60.dp)
             ) {
                 Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
             }

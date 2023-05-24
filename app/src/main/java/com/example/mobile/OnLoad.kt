@@ -1,5 +1,9 @@
 package com.example.mobile
 
+import android.gesture.Gesture
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -12,16 +16,21 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.example.mobile.ui.theme.drawer_content_color
+import kotlinx.coroutines.CoroutineScope
 import java.util.UUID
 
 data class Block (val id: UUID, var element: @Composable () -> Unit, var expression: MutableState<String>)
 {
     var offset = mutableStateOf(0.dp)
+    val visibleState = MutableTransitionState(false).apply {  targetState = true  }
+    var onDebug = mutableStateOf(false)
 }
 data class Variable(var value: String, val type: String)
 var variables = mutableMapOf<String, Variable>()
 var blocks: MutableList<Block> =  mutableStateListOf()
-var blocksToAdd: MutableList<Block> =  blocks
+var blocksToAdd = blocks
+var alpha: MutableState<Float> = mutableStateOf(1f)
 
 lateinit var localDensity: Density
 @OptIn(ExperimentalComposeUiApi::class)
@@ -37,10 +46,8 @@ fun OnLoad() {
 
     ModalDrawer(
         drawerState = drawerState,
-        drawerBackgroundColor = Color(0x80FFFFFF),
-        drawerContentColor = Color(0xFF000000),
-        gesturesEnabled = true,
-        modifier = Modifier,
+        drawerBackgroundColor = drawer_content_color,
+        gesturesEnabled = false,
         drawerContent = {
             DrawerContent(
                 scope,

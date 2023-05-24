@@ -1,5 +1,9 @@
 package com.example.mobile.ui.theme
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +43,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import com.example.mobile.*
 import com.example.mobile.R
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.UUID
@@ -66,6 +71,7 @@ fun While(
     var condition by rememberSaveable { mutableStateOf("") }
 
     val blockId = blocks.indexOf(blocks.find { it.id == index })
+
     for(i in whileBlocksToRender){
         LaunchedEffect(i.expression.value){
             blocks[blockId].expression.value = getWhileExpression(whileBlocksToRender, condition)
@@ -78,32 +84,10 @@ fun While(
             modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(condition_color_1, condition_color_2))
+                        colors = listOf(cycle_color_1, cycle_color_2))
                 ),
             verticalArrangement = Arrangement.SpaceBetween
         ){
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                verticalAlignment = Alignment.CenterVertically,
-//            ){
-//                Text(
-//                    text = "While",
-//                    fontSize = 25.sp,
-//                    modifier = Modifier.weight(1f),
-//                    textAlign = TextAlign.Center
-//                )
-//                TextField(
-//                    value = condition,
-//                    onValueChange = {newText ->
-//                        condition = newText
-//                        blocks[blockId].expression.value = getWhileExpression(whileBlocksToRender, condition)
-//                    },
-//                    textStyle = TextStyle(fontSize = 20.sp),
-//                    modifier = Modifier
-//                        .background(Color.Transparent)
-//                        .weight(2f)
-//                )
-//            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,7 +107,7 @@ fun While(
                     fontFamily = FontFamily(Font(R.font.fedra_sans)),
                     textAlign = TextAlign.Center
                 )
-                TextFieldSample(size = 300.dp, onValueChange = {newText ->
+                TextFieldSample(modifier = Modifier.weight(2f), onValueChange = {newText ->
                     condition = newText
                     blocks[blockId].expression.value = getWhileExpression(whileBlocksToRender, condition)
                 })
@@ -134,7 +118,15 @@ fun While(
                 verticalArrangement = Arrangement.Center
             ) {
                 whileBlocksToRender.forEach{block ->
-                    block.element()
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) whileBlocksToRender.remove(block)
+                    AnimatedVisibility(
+                        visibleState = block.visibleState,
+                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                    )
+                    {
+                        block.element()
+                    }
                 }
                 Button(
                     modifier = Modifier
@@ -144,6 +136,7 @@ fun While(
                         scope.launch{drawerState.open()}
                     },
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
+                    shape = RoundedCornerShape(50)
                 )
                 {
                     Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
@@ -151,9 +144,10 @@ fun While(
             }
             IconButton(
                 onClick = {
-                    handleBlockDelete(index, blocks)
+                    blocks[blockId].visibleState.targetState = false
                 },
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 60.dp)
             ) {
                 Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
             }

@@ -1,5 +1,9 @@
 package com.example.mobile.ui.theme
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -72,9 +76,8 @@ fun For(
     var condition by rememberSaveable { mutableStateOf("") }
     var action by rememberSaveable { mutableStateOf("") }
 
-    val blockId = remember {
-        blocks.indexOf(blocks.find { it.id == index })
-    }
+    val blockId = blocks.indexOf(blocks.find { it.id == index })
+
     for(i in forBlocksToRender){
         LaunchedEffect(i.expression.value){
             blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
@@ -83,46 +86,13 @@ fun For(
     }
     //wa>0:wab>0;action;action;action;action
     //f=i=0;i<5;=i=i+1:["f=j=0;j<5;=j=j+1:[\"/i*j\"]"]
-//    Card(
-//        modifier = Modifier
-//            .padding(15.dp)
-//            .border(2.dp, Color.Black, shape = RoundedCornerShape(5.dp))
-//            .fillMaxWidth()
-//            .fillMaxHeight()
-//            .defaultMinSize(225.dp, 480.dp)
-//            .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-//            .onGloballyPositioned { coordinates ->
-//                blocks[blockId].offset = with(localDensity) {coordinates.positionInParent().y.toDp()}
-//            }
-//            .pointerInput(Unit)
-//            {
-//                detectDragGesturesAfterLongPress(
-//                    onDragStart =
-//                    {
-//                        isDragged = true
-//                    },
-//                    onDragEnd =
-//                    {
-//                        isDragged = false
-//                        putInPlace(with(localDensity) { offsetY.toDp() }, index, blocks)
-//                        offsetY = 0f
-//                        offsetX = 0f
-//                    }
-//                ) { change, dragAmount ->
-//                    change.consume()
-//                    offsetX += dragAmount.x
-//                    offsetY += dragAmount.y
-//                }
-//            },
-//        backgroundColor = Color.Cyan
-//    )
     BlockSample(index = index, blocks = blocks, shape = RoundedCornerShape(5), inside =
     {
         Column(
             modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(condition_color_1, condition_color_2))
+                        colors = listOf(cycle_color_1, cycle_color_2))
                 ),
             verticalArrangement = Arrangement.SpaceBetween
         )
@@ -149,19 +119,7 @@ fun For(
                             .padding(horizontal = 10.dp),
                         textAlign = TextAlign.Center
                     )
-//                TextField(
-//                    value = variable,
-//                    onValueChange = {newText ->
-//                        variable = newText
-//                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                        println(blockId)
-//                    },
-//                    textStyle = TextStyle(fontSize = 20.sp),
-//                    modifier = Modifier
-//                        .background(Color.Transparent)
-//                        .weight(1f)
-//                )
-                    TextFieldSample(size = 100.dp, onValueChange = { newText ->
+                    TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         variable = newText
                         blocks[blockId].expression.value =
                             getForExpression(forBlocksToRender, condition, variable, action, value)
@@ -176,19 +134,7 @@ fun For(
                             .padding(horizontal = 10.dp),
                         textAlign = TextAlign.Center
                     )
-//                TextField(
-//                    value = value,
-//                    onValueChange = {newText ->
-//                        value = newText
-//                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                        println(blockId)
-//                    },
-//                    textStyle = TextStyle(fontSize = 20.sp),
-//                    modifier = Modifier
-//                        .background(Color.Transparent)
-//                        .weight(1f)
-//                )
-                    TextFieldSample(size = 100.dp, onValueChange = { newText ->
+                    TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         value = newText
                         blocks[blockId].expression.value =
                             getForExpression(forBlocksToRender, condition, variable, action, value)
@@ -211,7 +157,7 @@ fun For(
                     verticalAlignment = Alignment.CenterVertically,
                 )
                 {
-                    TextFieldSample(size = 250.dp, onValueChange = { newText ->
+                    TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         condition = newText
                         blocks[blockId].expression.value =
                             getForExpression(forBlocksToRender, condition, variable, action, value)
@@ -234,7 +180,7 @@ fun For(
                     verticalAlignment = Alignment.CenterVertically,
                 )
                 {
-                    TextFieldSample(size = 120.dp, onValueChange = { newText ->
+                    TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         variable = newText
                         blocks[blockId].expression.value =
                             getForExpression(forBlocksToRender, condition, variable, action, value)
@@ -249,19 +195,7 @@ fun For(
                             .padding(horizontal = 10.dp),
                         textAlign = TextAlign.Center
                     )
-//                TextField(
-//                    action,
-//                    onValueChange = {newText ->
-//                        action = newText
-//                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                        println(blockId)
-//                    },
-//                    textStyle = TextStyle(fontSize = 20.sp),
-//                    modifier = Modifier
-//                        .background(Color.Transparent)
-//                        .weight(1f)
-//                )
-                    TextFieldSample(size = 120.dp, onValueChange = { newText ->
+                    TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         action = newText
                         blocks[blockId].expression.value =
                             getForExpression(forBlocksToRender, condition, variable, action, value)
@@ -269,146 +203,6 @@ fun For(
                     })
                 }
             }
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .border(
-//                        width = 2.dp, color = Color.Black, shape = RectangleShape
-//                    ),
-//                verticalAlignment = Alignment.CenterVertically
-//            )
-//            {
-//                Text(
-//                    text = "For",
-//                    color = Color.White,
-//                    fontFamily = FontFamily(Font(R.font.fedra_sans)),
-//                    fontSize = 20.sp,
-//                    modifier = Modifier
-//                        .padding(horizontal = 10.dp),
-//                    textAlign = TextAlign.Center
-//                )
-////                TextField(
-////                    value = variable,
-////                    onValueChange = {newText ->
-////                        variable = newText
-////                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-////                        println(blockId)
-////                    },
-////                    textStyle = TextStyle(fontSize = 20.sp),
-////                    modifier = Modifier
-////                        .background(Color.Transparent)
-////                        .weight(1f)
-////                )
-//                TextFieldSample(size = 50.dp, onValueChange = {newText ->
-//                    variable = newText
-//                    blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                    println(blockId)
-//                })
-//                Text(
-//                    text = "=",
-//                    color = Color.White,
-//                    fontFamily = FontFamily(Font(R.font.fedra_sans)),
-//                    fontSize = 30.sp,
-//                    modifier = Modifier
-//                        .padding(horizontal = 10.dp),
-//                    textAlign = TextAlign.Center
-//                )
-////                TextField(
-////                    value = value,
-////                    onValueChange = {newText ->
-////                        value = newText
-////                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-////                        println(blockId)
-////                    },
-////                    textStyle = TextStyle(fontSize = 20.sp),
-////                    modifier = Modifier
-////                        .background(Color.Transparent)
-////                        .weight(1f)
-////                )
-//                TextFieldSample(size = 50.dp, onValueChange = {newText ->
-//                    value = newText
-//                    blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                    println(blockId)
-//                })
-//                Text(
-//                    text = ";",
-//                    color = Color.White,
-//                    fontFamily = FontFamily(Font(R.font.fedra_sans)),
-//                    fontSize = 30.sp,
-//                    modifier = Modifier
-//                        .padding(horizontal = 10.dp),
-//                    textAlign = TextAlign.Center
-//                )
-////                TextField(
-////                    value = condition,
-////                    onValueChange = {newText ->
-////                        condition = newText
-////                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-////                        println(blockId)
-////                    },
-////                    textStyle = TextStyle(fontSize = 20.sp),
-////                    modifier = Modifier
-////                        .background(Color.Transparent)
-////                        .weight(2f)
-////                )
-//                TextFieldSample(size = 50.dp, onValueChange = {newText ->
-//                    condition = newText
-//                    blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                    println(blockId)
-//                })
-//                Text(
-//                    text = ";",
-//                    color = Color.White,
-//                    fontFamily = FontFamily(Font(R.font.fedra_sans)),
-//                    fontSize = 30.sp,
-//                    modifier = Modifier
-//                        .padding(horizontal = 10.dp),
-//                    textAlign = TextAlign.Center
-//                )
-////                TextField(
-////                    value = variable,
-////                    onValueChange = {newText ->
-////                        variable = newText
-////                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-////                        println(blockId)
-////                    },
-////                    textStyle = TextStyle(fontSize = 20.sp),
-////                    modifier = Modifier
-////                        .background(Color.Transparent)
-////                        .weight(1f)
-////                )
-//                TextFieldSample(size = 50.dp, onValueChange = {newText ->
-//                    variable = newText
-//                    blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                    println(blockId)
-//                })
-//                Text(
-//                    text = "=",
-//                    color = Color.White,
-//                    fontFamily = FontFamily(Font(R.font.fedra_sans)),
-//                    fontSize = 30.sp,
-//                    modifier = Modifier
-//                        .padding(horizontal = 10.dp),
-//                    textAlign = TextAlign.Center
-//                )
-////                TextField(
-////                    action,
-////                    onValueChange = {newText ->
-////                        action = newText
-////                        blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-////                        println(blockId)
-////                    },
-////                    textStyle = TextStyle(fontSize = 20.sp),
-////                    modifier = Modifier
-////                        .background(Color.Transparent)
-////                        .weight(1f)
-////                )
-//                TextFieldSample(size = 50.dp, onValueChange = {newText ->
-//                    action = newText
-//                    blocks[blockId].expression.value = getForExpression(forBlocksToRender, condition,variable,action,value)
-//                    println(blockId)
-//                })
-//            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -416,7 +210,15 @@ fun For(
                 verticalArrangement = Arrangement.Center
             ) {
                 forBlocksToRender.forEach{block ->
-                    block.element()
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) forBlocksToRender.remove(block)
+                    AnimatedVisibility(
+                        visibleState = block.visibleState,
+                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                    )
+                    {
+                        block.element()
+                    }
                 }
 //                Button(
 //                    onClick = {
@@ -434,6 +236,7 @@ fun For(
                         scope.launch{drawerState.open()}
                     },
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
+                    shape = RoundedCornerShape(50)
                 )
                 {
                     Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
@@ -441,9 +244,10 @@ fun For(
             }
             IconButton(
                 onClick = {
-                    handleBlockDelete(index, blocks)
+                    blocks[blockId].visibleState.targetState = false
                 },
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 60.dp)
             ) {
                 Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
             }

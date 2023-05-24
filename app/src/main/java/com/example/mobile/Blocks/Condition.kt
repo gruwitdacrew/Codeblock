@@ -1,5 +1,9 @@
 package com.example.mobile.ui.theme
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,9 +88,7 @@ fun Condition(
     val elseBlocksToRender: MutableList<Block> =  remember { mutableStateListOf() }
     var condition by rememberSaveable { mutableStateOf("") }
 
-    val blockId by remember {
-        mutableStateOf(blocks.indexOf(blocks.find { it.id == index }))
-    }
+    val blockId = blocks.indexOf(blocks.find { it.id == index })
 
     LaunchedEffect(blockId){
         println(index.toString() + " " + blocks.size)
@@ -133,23 +135,10 @@ fun Condition(
                     fontFamily = FontFamily(Font(R.font.fedra_sans)),
                     textAlign = TextAlign.Center
                 )
-                TextFieldSample(size = 400.dp, onValueChange = {newText ->
+                TextFieldSample(modifier = Modifier.weight(2f), onValueChange = {newText ->
                     condition = newText
                     blocks[blockId].expression.value = getIfExpression(ifBlocksToRender,elseBlocksToRender, condition)
                 })
-//                TextField(
-//                    value = condition,
-//                    onValueChange = {newText ->
-//                        condition = newText
-//                    },
-//                    textStyle = TextStyle(fontSize = 20.sp),
-//                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-//                    keyboardActions = KeyboardActions(
-//                        onDone = {keyboardController?.hide(); focusManager.clearFocus()}),
-//                    modifier = Modifier
-//                        .background(Color.Transparent)
-//                        .weight(2f)
-//                )
             }
             Column(
                 modifier = Modifier
@@ -159,7 +148,15 @@ fun Condition(
             )
             {
                 ifBlocksToRender.forEach{block ->
-                    block.element()
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) ifBlocksToRender.remove(block)
+                    AnimatedVisibility(
+                        visibleState = block.visibleState,
+                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                    )
+                    {
+                        block.element()
+                    }
                     println("${block.id} ${block.offset.value}")
                 }
                 Button(
@@ -170,6 +167,7 @@ fun Condition(
                         scope.launch{drawerState.open()}
                     },
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
+                    shape = RoundedCornerShape(50)
                 )
                 {
                     Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
@@ -200,16 +198,25 @@ fun Condition(
                 verticalArrangement = Arrangement.Center
             ) {
                 elseBlocksToRender.forEach{block ->
-                    block.element()
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) elseBlocksToRender.remove(block)
+                    AnimatedVisibility(
+                        visibleState = block.visibleState,
+                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                    )
+                    {
+                        block.element()
+                    }
                     println("${block.id} ${block.offset}")
                 }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
-                    blocksToAdd = elseBlocksToRender
-                    scope.launch{drawerState.open()}},
+                        blocksToAdd = elseBlocksToRender
+                        scope.launch{drawerState.open()} },
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
+                    shape = RoundedCornerShape(50)
                 )
                 {
                     Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
@@ -218,9 +225,10 @@ fun Condition(
             }
             IconButton(
                 onClick = {
-                    handleBlockDelete(index, blocks)
+                    blocks[blockId].visibleState.targetState = false
                 },
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 60.dp)
             ) {
                 Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
             }

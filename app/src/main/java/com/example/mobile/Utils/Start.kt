@@ -6,7 +6,6 @@ import com.example.mobile.variables
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
-@OptIn(ExperimentalSerializationApi::class)
 fun start(item:String, lines:MutableList<String>, dictionary:MutableMap<String,Variable> = variables){
     when(item[0]){
         'i' -> {

@@ -1,5 +1,6 @@
 package com.example.mobile
 import android.annotation.SuppressLint
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -10,24 +11,24 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.UUID
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
 @Composable
 fun BlockSample(
     index: UUID,
@@ -36,38 +37,47 @@ fun BlockSample(
     inside: @Composable () -> Unit,
 )
 {
-//    var variable by remember { mutableStateOf("") }
-//    var expression by remember { mutableStateOf("") }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-
+    val localFocusManager = LocalFocusManager.current
+    var elevation by remember { mutableStateOf(0f) }
     val blockId = blocks.indexOf(blocks.find { it.id == index } )
 
     Card(
         modifier = Modifier
+            .background(color = if (blocks[blockId].onDebug.value) Color.Red else Color.Transparent)
             .padding(10.dp)
-            .fillMaxWidth()
-            .defaultMinSize(180.dp, 70.dp)
+            .defaultMinSize(400.dp, 70.dp)
+            .fillMaxWidth(0.5f)
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .border(
                 width = 2.dp, color = Color.Black, shape = shape
             )
             .onGloballyPositioned { coordinates ->
-                blocks[blockId].offset.value =
-                    with(localDensity) { coordinates.positionInParent().y.toDp() + coordinates.size.height.toDp() / 2 }
+                blocks[blockId].offset.value = with(localDensity) { coordinates.positionInWindow().y.toDp() + coordinates.size.height.toDp() / 2 }
             }
+            .shadow(elevation = elevation.dp, spotColor = Color.Black, shape = shape)
             .pointerInput(Unit)
             {
                 detectDragGesturesAfterLongPress(
                     onDragStart =
                     {
-
+                        localFocusManager.clearFocus()
+                        alpha.value = 0.7f
+                        elevation = 20f
                     },
                     onDragEnd =
                     {
+                        alpha.value = 1f
+                        elevation = 1f
                         putInPlace(with(localDensity) { offsetY.toDp() }, index, blocks)
                         offsetY = 0f
                         offsetX = 0f
+                    },
+                    onDragCancel =
+                    {
+                        alpha.value = 1f
+                        elevation = 1f
                     }
                 )
                 { change, dragAmount ->
@@ -82,10 +92,12 @@ fun BlockSample(
         inside()
     }
 }
+//private fun String.letters() = filter { it.isLetter() }
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TextFieldSample(
-    size: Dp,
+    modifier: Modifier,
     onValueChange: (String) -> Unit,
 )
 {
@@ -99,15 +111,17 @@ fun TextFieldSample(
         onValueChange = {newText->
             run {
                 onValueChange(newText)
-                text = newText
+                if (newText.matches(Regex("[a-zA-z0-9.,+\\-/*]*"))) {
+                    text = newText
+                }
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {keyboardController.hide(); focusManager.clearFocus()}),
         singleLine = true,
-        modifier = Modifier
-            .width(size)
+        modifier = modifier
+//            .width(size)
             .background(Color.Transparent)
             .border(
                 width = 2.dp, color = Color.Black
