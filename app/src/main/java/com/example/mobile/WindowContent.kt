@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.format.TextStyle
 
-
+var light = true
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WindowContent(
@@ -55,7 +56,6 @@ fun WindowContent(
     val lines = remember{ mutableStateListOf<String>() }
     val localFocusManager = LocalFocusManager.current
     var offsetX by remember { mutableStateOf(0f) }
-    var light = true
     var count = 0
 
     ModalBottomSheetLayout(
@@ -148,7 +148,6 @@ fun WindowContent(
                     onClick = {
                         val finalTasks = blocks.toList();
                         lines.clear()
-
                         if (light)
                         {
                             for ((index, element, item) in finalTasks){
@@ -159,6 +158,7 @@ fun WindowContent(
                         }
                         else
                         {
+                            blocks[count].onDebug.value = false
                             for (j in 0..count)
                             {
                                 if (finalTasks[j].expression.value.length > 1)
@@ -166,8 +166,12 @@ fun WindowContent(
                                     start(finalTasks[j].expression.value, lines)
                                 }
                             }
-                            blocks[count].onDebug.value = true
-                            count ++
+                            if (count == blocks.size-1)
+                            {
+                                count = 0
+                            }
+                            blocks[count+1].onDebug.value = true
+                            count++
                         }
                         // Отобразить модальное окно
                         coroutineScope.launch {
@@ -192,9 +196,11 @@ fun WindowContent(
                                 onDragEnd =
                                 {
                                     if (offsetX >= 80f) {
-                                        if (light) {
+                                        if (light)
+                                        {
                                             DarkTheme()
                                             light = false
+                                            if (blocks.size >= 1) blocks[0].onDebug.value = true
                                         }
                                         else
                                         {
@@ -229,6 +235,11 @@ fun WindowContent(
                     onClick = {
                         blocksToAdd = blocks
                         scope.launch { drawerState.open()}
+                        if (blocks.size >= 1 && !light)
+                        {
+                            blocks[0].onDebug.value = true
+                            count = 0
+                        }
                     },
                     modifier = Modifier
                         .padding(horizontal = 50.dp)
@@ -264,10 +275,27 @@ fun ModalContent(lines: MutableList<String>) {
     {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            items(lines){line->
-                Text(text = line)
+            contentPadding = PaddingValues(vertical = 8.dp),
+        )
+        {
+            item()
+            {
+                Text(modifier = Modifier.fillMaxWidth(), text = "Print", fontSize = 25.sp, color = Color.White)
+            }
+            items(lines)
+            {line->
+                Text(text = line, textAlign = TextAlign.Center)
+            }
+            if (!light)
+            {
+                item()
+                {
+                    Text(modifier = Modifier.fillMaxWidth(), text = "Variables", fontSize = 25.sp, color = Color.White)
+                }
+                items(variables.toList())
+                {line->
+                    Text(text = "${line.first} = ${line.second.value}", textAlign = TextAlign.Center)
+                }
             }
         }
     }

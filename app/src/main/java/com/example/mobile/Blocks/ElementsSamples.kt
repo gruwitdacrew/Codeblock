@@ -111,7 +111,7 @@ fun TextFieldSample(
         onValueChange = {newText->
             run {
                 onValueChange(newText)
-                if (newText.matches(Regex("[a-zA-z0-9.,+\\-/*]*"))) {
+                if (newText.matches(Regex("[a-zA-z0-9.,+\\-/*<>=!]*"))) {
                     text = newText
                 }
             }
