@@ -1,16 +1,17 @@
 package com.example.mobile
 
-import android.view.ScrollCaptureTarget
-import androidx.compose.animation.*
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.*
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -18,22 +19,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -42,9 +34,9 @@ import com.example.mobile.Utils.start
 import com.example.mobile.ui.theme.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.time.format.TextStyle
 
 var light = true
+
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WindowContent(
@@ -53,10 +45,10 @@ fun WindowContent(
 ) {
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
-    val lines = remember{ mutableStateListOf<String>() }
+    val lines = remember { mutableStateListOf<String>() }
     val localFocusManager = LocalFocusManager.current
     var offsetX by remember { mutableStateOf(0f) }
-    var count = 0
+    var debugBlockNumber = 0
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -93,9 +85,11 @@ fun WindowContent(
                     }
             )
             {
-                items(items = blocks, key = {it.id})
+                items(items = blocks, key = { it.id })
                 { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocks.remove(block)
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocks.remove(
+                        block
+                    )
                     AnimatedVisibility(
                         modifier = Modifier
                             .animateItemPlacement(),
@@ -146,32 +140,31 @@ fun WindowContent(
             {
                 FloatingActionButton(
                     onClick = {
-                        val finalTasks = blocks.toList();
+                        val finalTasks = blocks.toList()
                         lines.clear()
-                        if (light)
-                        {
-                            for ((index, element, item) in finalTasks){
-                                if (item.value.length > 1){
-                                    start(item.value,lines)
+                        variables.clear()
+                        start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
+                        if (light) {
+                            for ((index, element, item) in finalTasks) {
+                                if (item.value.length > 1) {
+                                    start(item.value, lines)
                                 }
                             }
-                        }
-                        else
-                        {
-                            blocks[count].onDebug.value = false
-                            for (j in 0..count)
-                            {
-                                if (finalTasks[j].expression.value.length > 1)
-                                {
+                        } else {
+                            for (j in 0..debugBlockNumber) {
+                                if (finalTasks[j].expression.value.length > 1) {
                                     start(finalTasks[j].expression.value, lines)
                                 }
                             }
-                            if (count == blocks.size-1)
-                            {
-                                count = 0
+                            blocks[debugBlockNumber].onDebug.value = false
+                            if (debugBlockNumber < blocks.size - 1) {
+                                debugBlockNumber++
+                                blocks[debugBlockNumber].onDebug.value = true
+                            } else {
+                                blocks[debugBlockNumber].onDebug.value = false
+                                debugBlockNumber = 0
+                                blocks[debugBlockNumber].onDebug.value = true
                             }
-                            blocks[count+1].onDebug.value = true
-                            count++
                         }
                         // Отобразить модальное окно
                         coroutineScope.launch {
@@ -182,7 +175,12 @@ fun WindowContent(
                         .padding(horizontal = 50.dp)
                         .size(80.dp, 60.dp)
                         .background(
-                            brush = Brush.linearGradient(listOf(color_on_change_theme1, color_on_change_theme2)),
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    color_on_change_theme1,
+                                    color_on_change_theme2
+                                )
+                            ),
                             shape = RoundedCornerShape(55)
                         )
                         .offset { IntOffset(offsetX.toInt(), 0) }
@@ -196,16 +194,16 @@ fun WindowContent(
                                 onDragEnd =
                                 {
                                     if (offsetX >= 80f) {
-                                        if (light)
-                                        {
+                                        if (light) {
                                             DarkTheme()
                                             light = false
                                             if (blocks.size >= 1) blocks[0].onDebug.value = true
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             LightTheme()
                                             light = true
+                                            if (blocks.size >= 1) blocks[debugBlockNumber].onDebug.value =
+                                                false
+                                            debugBlockNumber = 0
                                         }
                                     }
                                     offsetX = 0f
@@ -229,16 +227,19 @@ fun WindowContent(
                     backgroundColor = Color.Black,
                     shape = RoundedCornerShape(50),
                 ) {
-                    Image(painter = painterResource(id = R.drawable.compile), contentDescription = null, contentScale = ContentScale.Crop)
+                    Image(
+                        painter = painterResource(id = R.drawable.compile),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
                 }
                 Button(
                     onClick = {
                         blocksToAdd = blocks
-                        scope.launch { drawerState.open()}
-                        if (blocks.size >= 1 && !light)
-                        {
+                        scope.launch { drawerState.open() }
+                        if (blocks.size >= 1 && !light) {
                             blocks[0].onDebug.value = true
-                            count = 0
+                            debugBlockNumber = 0
                         }
                     },
                     modifier = Modifier
@@ -258,43 +259,95 @@ fun WindowContent(
                     shape = RoundedCornerShape(50),
                 )
                 {
-                    Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
+                    Image(
+                        painter = painterResource(id = R.drawable.add),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit
+                    )
                 }
             }
         }
     }
 }
-
+//@Composable
+//fun ModalContent(lines: MutableList<String>) {
+//    Row(modifier = Modifier.fillMaxWidth()
+//        .padding(20.dp)
+//        .defaultMinSize(50.dp, 50.dp)
+//    )
+//    {
+////        LazyColumn(
+////            contentPadding = PaddingValues(vertical = 8.dp),
+////            horizontalAlignment = Alignment.Start
+////        )
+////        {
+////            items(lines)
+////            { line ->
+////                Text(text = line, textAlign = TextAlign.Center, fontFamily = FontFamily.SansSerif)
+////            }
+////        }
+//        LazyColumn(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentPadding = PaddingValues(vertical = 8.dp),
+//        )
+//        {
+//            item()
+//            {
+//                Text(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    text = "Variables",
+//                    fontSize = 25.sp,
+//                    color = Color.White,
+//                    textAlign = TextAlign.End
+//                )
+//            }
+//            items(variables.toList())
+//            { line ->
+//                Text(
+//                    text = "${line.first} = ${line.second.value}",
+//                    textAlign = TextAlign.End,
+//                    fontFamily = FontFamily.SansSerif
+//                )
+//            }
+//
+//        }
+//    }
+//}
 @Composable
 fun ModalContent(lines: MutableList<String>) {
-    Box(
+    Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(20.dp)
             .defaultMinSize(50.dp, 50.dp)
     )
     {
         LazyColumn(
+            modifier = Modifier.fillMaxWidth(0.5f),
+            contentPadding = PaddingValues(vertical = 8.dp),
+        )
+        {
+            items(lines)
+            { line ->
+                Text(text = line, textAlign = TextAlign.Start, fontFamily = FontFamily.SansSerif)
+            }
+        }
+        LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 8.dp),
         )
         {
-            item()
-            {
-                Text(modifier = Modifier.fillMaxWidth(), text = "Print", fontSize = 25.sp, color = Color.White)
-            }
             items(lines)
-            {line->
-                Text(text = line, textAlign = TextAlign.Center)
-            }
-            if (!light)
             {
-                item()
-                {
-                    Text(modifier = Modifier.fillMaxWidth(), text = "Variables", fontSize = 25.sp, color = Color.White)
-                }
+            }
+            if (!light) {
                 items(variables.toList())
-                {line->
-                    Text(text = "${line.first} = ${line.second.value}", textAlign = TextAlign.Center)
+                { line ->
+                    Text(
+                        text = "${line.first} = ${line.second.value}",
+                        fontFamily = FontFamily.SansSerif,
+                        textAlign = TextAlign.End,
+                    )
                 }
             }
         }

@@ -1,50 +1,34 @@
 package com.example.mobile
 
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.modifier.modifierLocalOf
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.ui.theme.assignment_color_1
-import com.example.mobile.ui.theme.assignment_color_2
+import com.example.mobile.Utils.BlockInformation
 import com.example.mobile.ui.theme.init_color_1
 import com.example.mobile.ui.theme.init_color_2
-import java.util.UUID
+import java.util.*
 
 @Composable
-fun InitBlock(index: UUID, blocks: MutableList<Block>) {
+fun InitBlock(view: BlockInformation,) {
     var key by rememberSaveable { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("") }
-    val blockId = blocks.indexOf(blocks.find { it.id == index })
+    val index = blocks.indexOf(blocks.find { it.id == view.id })
 
-    BlockSample(index = index, blocks = blocks, shape = RoundedCornerShape(50.dp))
+    BlockSample(view = view, shape = RoundedCornerShape(50.dp))
     {
         Row(
             modifier = Modifier
@@ -78,7 +62,7 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                             selectedType = "Int"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "iInt;$key"
+                            blocks[index].expression.value = "iInt;$key"
                         }
                     ) {
                         Text(
@@ -94,67 +78,76 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
                             selectedType = "String"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "iString;$key"
+                            blocks[index].expression.value = "iString;$key"
                         }
                     ) {
-                        Text(text = "String",
+                        Text(
+                            text = "String",
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.fedra_sans)),
                             fontSize = 15.sp,
-                            textAlign = TextAlign.Center)
+                            textAlign = TextAlign.Center
+                        )
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Bool"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "iBool;$key"
+                            blocks[index].expression.value = "iBool;$key"
                         }
                     ) {
-                        Text("Bool",
+                        Text(
+                            "Bool",
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.fedra_sans)),
                             fontSize = 15.sp,
-                            textAlign = TextAlign.Center)
+                            textAlign = TextAlign.Center
+                        )
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Array\n<Int>"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "iArray<Int>;$key"
+                            blocks[index].expression.value = "iArray<Int>;$key"
                         }
                     ) {
-                        Text("Array\n<Int>",
+                        Text(
+                            "Array\n<Int>",
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.fedra_sans)),
                             fontSize = 15.sp,
-                            textAlign = TextAlign.Center)
+                            textAlign = TextAlign.Center
+                        )
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Array\n<String>"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "iArray<String>;$key"
+                            blocks[index].expression.value = "iArray<String>;$key"
                         }
                     ) {
-                        Text("Array\n<String>",
+                        Text(
+                            "Array\n<String>",
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.fedra_sans)),
                             fontSize = 15.sp,
 
-                            textAlign = TextAlign.Center)
+                            textAlign = TextAlign.Center
+                        )
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Array\n<Bool>"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "iArray<Bool>;$key"
+                            blocks[index].expression.value = "iArray<Bool>;$key"
                         }
                     ) {
-                        Text("Array\n<Bool>",
+                        Text(
+                            "Array\n<Bool>",
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.fedra_sans)),
                             fontSize = 15.sp,
@@ -181,12 +174,12 @@ fun InitBlock(index: UUID, blocks: MutableList<Block>) {
             }
             TextFieldSample(modifier = Modifier.weight(2f), onValueChange = {
                 key = it.trim()
-                blocks[blockId].expression.value = "i$selectedType;$key"
+                blocks[index].expression.value = "i$selectedType;$key"
             })
 
             IconButton(
                 onClick = {
-                    blocks[blockId].visibleState.targetState = false
+                    blocks[index].visibleState.targetState = false
                 },
                 modifier = Modifier
                     .defaultMinSize(minWidth = 60.dp)
