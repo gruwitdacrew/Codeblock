@@ -25,8 +25,8 @@ data class Block(
 data class Variable(var value: String, val type: String)
 
 var variables = mutableMapOf<String, Variable>()
-var blocks: MutableList<Block> = mutableStateListOf()
-var blocksToAdd = blocks
+var blocksToRender: MutableList<Block> = mutableStateListOf()
+var blocksToAdd = blocksToRender
 var alpha: MutableState<Float> = mutableStateOf(1f)
 
 lateinit var localDensity: Density

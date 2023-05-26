@@ -26,7 +26,12 @@ import java.util.*
 fun InitBlock(view: BlockInformation,) {
     var key by rememberSaveable { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("") }
-    val index = blocks.indexOf(blocks.find { it.id == view.id })
+    val blocks = view.blocks
+    var index = blocks.indexOf(blocks.find { it.id == view.id })
+
+    LaunchedEffect(blocks.size){
+        index = blocks.indexOf(blocks.find { it.id == view.id })
+    }
 
     BlockSample(view = view, shape = RoundedCornerShape(50.dp))
     {

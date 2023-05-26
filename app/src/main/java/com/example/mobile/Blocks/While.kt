@@ -53,10 +53,13 @@ fun While(
     scope: CoroutineScope,
     drawerState: DrawerState,
 ) {
+    val blocks = view.blocks
     val whileBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
     var condition by rememberSaveable { mutableStateOf("") }
-
-    val index = blocks.indexOf(blocks.find { it.id == view.id })
+    var index = blocks.indexOf(blocks.find { it.id == view.id })
+    LaunchedEffect(blocks.size){
+        index = blocks.indexOf(blocks.find { it.id == view.id })
+    }
 
     for (i in whileBlocksToRender) {
         LaunchedEffect(i.expression.value) {

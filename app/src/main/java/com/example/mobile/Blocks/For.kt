@@ -61,15 +61,16 @@ fun For(
     drawerState: DrawerState,
 ) {
     val forBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
-
     var variable by rememberSaveable { mutableStateOf("") }
     var value by rememberSaveable { mutableStateOf("") }
     var condition by rememberSaveable { mutableStateOf("") }
     var action by rememberSaveable { mutableStateOf("") }
 
-    var index = com.example.mobile.blocks.indexOf(com.example.mobile.blocks.find { it.id == view.id })
-    LaunchedEffect(com.example.mobile.blocks.size){
-        index = com.example.mobile.blocks.indexOf(com.example.mobile.blocks.find { it.id == view.id })
+    val blocks = view.blocks
+
+    var index = blocks.indexOf(blocks.find { it.id == view.id })
+    LaunchedEffect(blocks.size){
+        index = blocks.indexOf(blocks.find { it.id == view.id })
     }
 
     for (i in forBlocksToRender) {

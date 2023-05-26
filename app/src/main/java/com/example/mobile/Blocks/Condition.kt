@@ -70,6 +70,8 @@ fun Condition(
     val ifBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
     val elseBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
     var condition by rememberSaveable { mutableStateOf("") }
+    val blocks = view.blocks
+
 
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){

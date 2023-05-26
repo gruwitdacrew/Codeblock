@@ -29,6 +29,7 @@ fun Assignment(view: BlockInformation,)
 {
     var variable by rememberSaveable { mutableStateOf("") }
     var expression by rememberSaveable { mutableStateOf("") }
+    val blocks = view.blocks
 
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){

@@ -85,9 +85,9 @@ fun WindowContent(
                     }
             )
             {
-                items(items = blocks, key = { it.id })
+                items(items = blocksToRender, key = { it.id })
                 { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocks.remove(
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocksToRender.remove(
                         block
                     )
                     AnimatedVisibility(
@@ -101,25 +101,25 @@ fun WindowContent(
                         block.element()
                     }
                 }
-                println(blocks.size)
+                println(blocksToRender.size)
 //                items(
-//                    count = blocks.size,
+//                    count = blocksToRender.size,
 //                    key = {
-//                        blocks[it].id
+//                        blocksToRender[it].id
 //                    },
 //                    itemContent = { index ->
 //                        AnimatedVisibility(
 //                            modifier = Modifier.animateItemPlacement(),
-//                            visibleState = blocks[index].visibleState,
+//                            visibleState = blocksToRender[index].visibleState,
 //                            enter = scaleIn(animationSpec = tween(durationMillis = 100, easing = LinearEasing)),
 //                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
 //                        )
 //                        {
-//                            blocks[index].element()
+//                            blocksToRender[index].element()
 //                        }
 //                    }
 //                )
-//                for (i in blocks.withIndex())
+//                for (i in blocksToRender.withIndex())
 //                {
 //                    i.value.element()
 //                }
@@ -140,7 +140,7 @@ fun WindowContent(
             {
                 FloatingActionButton(
                     onClick = {
-                        val finalTasks = blocks.toList()
+                        val finalTasks = blocksToRender.toList()
                         lines.clear()
                         variables.clear()
                         start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
@@ -156,14 +156,14 @@ fun WindowContent(
                                     start(finalTasks[j].expression.value, lines)
                                 }
                             }
-                            blocks[debugBlockNumber].onDebug.value = false
-                            if (debugBlockNumber < blocks.size - 1) {
+                            blocksToRender[debugBlockNumber].onDebug.value = false
+                            if (debugBlockNumber < blocksToRender.size - 1) {
                                 debugBlockNumber++
-                                blocks[debugBlockNumber].onDebug.value = true
+                                blocksToRender[debugBlockNumber].onDebug.value = true
                             } else {
-                                blocks[debugBlockNumber].onDebug.value = false
+                                blocksToRender[debugBlockNumber].onDebug.value = false
                                 debugBlockNumber = 0
-                                blocks[debugBlockNumber].onDebug.value = true
+                                blocksToRender[debugBlockNumber].onDebug.value = true
                             }
                         }
                         // Отобразить модальное окно
@@ -177,8 +177,8 @@ fun WindowContent(
                         .background(
                             brush = Brush.linearGradient(
                                 listOf(
-                                    color_on_change_theme1,
-                                    color_on_change_theme2
+                                    color_on_change_theme1.value,
+                                    color_on_change_theme2.value
                                 )
                             ),
                             shape = RoundedCornerShape(55)
@@ -197,11 +197,11 @@ fun WindowContent(
                                         if (light) {
                                             DarkTheme()
                                             light = false
-                                            if (blocks.size >= 1) blocks[0].onDebug.value = true
+                                            if (blocksToRender.size >= 1) blocksToRender[0].onDebug.value = true
                                         } else {
                                             LightTheme()
                                             light = true
-                                            if (blocks.size >= 1) blocks[debugBlockNumber].onDebug.value =
+                                            if (blocksToRender.size >= 1) blocksToRender[debugBlockNumber].onDebug.value =
                                                 false
                                             debugBlockNumber = 0
                                         }
@@ -235,10 +235,10 @@ fun WindowContent(
                 }
                 Button(
                     onClick = {
-                        blocksToAdd = blocks
+                        blocksToAdd = blocksToRender
                         scope.launch { drawerState.open() }
-                        if (blocks.size >= 1 && !light) {
-                            blocks[0].onDebug.value = true
+                        if (blocksToRender.size >= 1 && !light) {
+                            blocksToRender[0].onDebug.value = true
                             debugBlockNumber = 0
                         }
                     },
@@ -388,7 +388,7 @@ fun ModalContent(lines: MutableList<String>) {
 //                verticalArrangement = Arrangement.spacedBy(10.dp)
 //            )
 //            {
-//                items(blocksToRender) { block ->
+//                items(blocksToRenderToRender) { block ->
 //                    block.element()
 //                }
 //            }
@@ -404,7 +404,7 @@ fun ModalContent(lines: MutableList<String>) {
 //            {
 //                FloatingActionButton(
 //                    onClick = {
-//                        val finalTasks = blocksToRender.toList();
+//                        val finalTasks = blocksToRenderToRender.toList();
 //                        lines.clear()
 //                        for ((index, element, item) in finalTasks){
 //                            start(item.value,lines)
@@ -425,7 +425,7 @@ fun ModalContent(lines: MutableList<String>) {
 //                }
 //                Button(
 //                    onClick = {
-//                        blocksToAdd = blocksToRender
+//                        blocksToRenderToAdd = blocksToRenderToRender
 //                        scope.launch { drawerState.open() }
 //                    },
 //                    modifier = Modifier
