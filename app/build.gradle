@@ -69,4 +69,8 @@ dependencies {
     //GSON implementation
     implementation 'com.google.code.gson:gson:2.8.7'
 
+//    implementation 'com.mirfanrafif:tinydb:0.1.4'
+//    implementation 'com.github.kittinunf.fuel:fuel-android:2.3.1'
+//    implementation 'com.pixplicity.easyprefs:library:1.9.0'
+//    implementation 'com.mukesh:tinydb:1.2.4'
 }

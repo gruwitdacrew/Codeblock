@@ -35,7 +35,7 @@ import com.example.mobile.ui.theme.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-var light = true
+var light= mutableStateOf(true)
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -102,27 +102,7 @@ fun WindowContent(
                     }
                 }
                 println(blocksToRender.size)
-//                items(
-//                    count = blocksToRender.size,
-//                    key = {
-//                        blocksToRender[it].id
-//                    },
-//                    itemContent = { index ->
-//                        AnimatedVisibility(
-//                            modifier = Modifier.animateItemPlacement(),
-//                            visibleState = blocksToRender[index].visibleState,
-//                            enter = scaleIn(animationSpec = tween(durationMillis = 100, easing = LinearEasing)),
-//                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-//                        )
-//                        {
-//                            blocksToRender[index].element()
-//                        }
-//                    }
-//                )
-//                for (i in blocksToRender.withIndex())
-//                {
-//                    i.value.element()
-//                }
+
 
             }
 
@@ -144,7 +124,7 @@ fun WindowContent(
                         lines.clear()
                         variables.clear()
                         start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
-                        if (light) {
+                        if (light.value) {
                             for ((index, element, item) in finalTasks) {
                                 if (item.value.length > 1) {
                                     start(item.value, lines)
@@ -194,13 +174,13 @@ fun WindowContent(
                                 onDragEnd =
                                 {
                                     if (offsetX >= 80f) {
-                                        if (light) {
+                                        if (light.value) {
                                             DarkTheme()
-                                            light = false
+                                            light.value = false
                                             if (blocksToRender.size >= 1) blocksToRender[0].onDebug.value = true
                                         } else {
                                             LightTheme()
-                                            light = true
+                                            light.value = true
                                             if (blocksToRender.size >= 1) blocksToRender[debugBlockNumber].onDebug.value =
                                                 false
                                             debugBlockNumber = 0
@@ -237,7 +217,7 @@ fun WindowContent(
                     onClick = {
                         blocksToAdd = blocksToRender
                         scope.launch { drawerState.open() }
-                        if (blocksToRender.size >= 1 && !light) {
+                        if (blocksToRender.size >= 1 && !light.value) {
                             blocksToRender[0].onDebug.value = true
                             debugBlockNumber = 0
                         }
@@ -340,7 +320,7 @@ fun ModalContent(lines: MutableList<String>) {
             items(lines)
             {
             }
-            if (!light) {
+            if (!light.value) {
                 items(variables.toList())
                 { line ->
                     Text(
