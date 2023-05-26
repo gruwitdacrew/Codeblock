@@ -1,8 +1,9 @@
-package com.example.mobile
+package com.example.mobile.Views
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.example.mobile.OnLoad
 import com.example.mobile.ui.theme.MobileTheme
 
 class MainActivity : ComponentActivity() {

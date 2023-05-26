@@ -10,37 +10,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.DrawerState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Text
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -50,21 +25,13 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobile.Utils.start
-import com.example.mobile.ui.theme.DarkTheme
-import com.example.mobile.ui.theme.LightTheme
-import com.example.mobile.ui.theme.bottom_bar_color
-import com.example.mobile.ui.theme.color_on_change_theme1
-import com.example.mobile.ui.theme.color_on_change_theme2
-import com.example.mobile.ui.theme.condition_color_1
-import com.example.mobile.ui.theme.condition_color_2
-import com.example.mobile.ui.theme.cycle_color_1
-import com.example.mobile.ui.theme.cycle_color_2
-import com.example.mobile.ui.theme.screen
+import com.example.mobile.ui.theme.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -81,7 +48,7 @@ fun WindowContent(
     val lines = remember { mutableStateListOf<String>() }
     val localFocusManager = LocalFocusManager.current
     var offsetX by remember { mutableStateOf(0f) }
-    var count = 0
+    var debugBlockNumber = 0
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -118,9 +85,9 @@ fun WindowContent(
                     }
             )
             {
-                items(items = blocks, key = { it.id })
+                items(items = blocksToRender, key = { it.id })
                 { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocks.remove(
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocksToRender.remove(
                         block
                     )
                     AnimatedVisibility(
@@ -134,25 +101,25 @@ fun WindowContent(
                         block.element()
                     }
                 }
-                println(blocks.size)
+                println(blocksToRender.size)
 //                items(
-//                    count = blocks.size,
+//                    count = blocksToRender.size,
 //                    key = {
-//                        blocks[it].id
+//                        blocksToRender[it].id
 //                    },
 //                    itemContent = { index ->
 //                        AnimatedVisibility(
 //                            modifier = Modifier.animateItemPlacement(),
-//                            visibleState = blocks[index].visibleState,
+//                            visibleState = blocksToRender[index].visibleState,
 //                            enter = scaleIn(animationSpec = tween(durationMillis = 100, easing = LinearEasing)),
 //                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
 //                        )
 //                        {
-//                            blocks[index].element()
+//                            blocksToRender[index].element()
 //                        }
 //                    }
 //                )
-//                for (i in blocks.withIndex())
+//                for (i in blocksToRender.withIndex())
 //                {
 //                    i.value.element()
 //                }
@@ -173,8 +140,10 @@ fun WindowContent(
             {
                 FloatingActionButton(
                     onClick = {
-                        val finalTasks = blocks.toList()
+                        val finalTasks = blocksToRender.toList()
                         lines.clear()
+                        variables.clear()
+                        start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
                         if (light) {
                             for ((index, element, item) in finalTasks) {
                                 if (item.value.length > 1) {
@@ -182,17 +151,20 @@ fun WindowContent(
                                 }
                             }
                         } else {
-                            blocks[count].onDebug.value = false
-                            for (j in 0..count) {
+                            for (j in 0..debugBlockNumber) {
                                 if (finalTasks[j].expression.value.length > 1) {
                                     start(finalTasks[j].expression.value, lines)
                                 }
                             }
-                            if (count == blocks.size - 1) {
-                                count = 0
+                            blocksToRender[debugBlockNumber].onDebug.value = false
+                            if (debugBlockNumber < blocksToRender.size - 1) {
+                                debugBlockNumber++
+                                blocksToRender[debugBlockNumber].onDebug.value = true
+                            } else {
+                                blocksToRender[debugBlockNumber].onDebug.value = false
+                                debugBlockNumber = 0
+                                blocksToRender[debugBlockNumber].onDebug.value = true
                             }
-                            blocks[count + 1].onDebug.value = true
-                            count++
                         }
                         // Отобразить модальное окно
                         coroutineScope.launch {
@@ -205,8 +177,8 @@ fun WindowContent(
                         .background(
                             brush = Brush.linearGradient(
                                 listOf(
-                                    color_on_change_theme1,
-                                    color_on_change_theme2
+                                    color_on_change_theme1.value,
+                                    color_on_change_theme2.value
                                 )
                             ),
                             shape = RoundedCornerShape(55)
@@ -225,10 +197,13 @@ fun WindowContent(
                                         if (light) {
                                             DarkTheme()
                                             light = false
-                                            if (blocks.size >= 1) blocks[0].onDebug.value = true
+                                            if (blocksToRender.size >= 1) blocksToRender[0].onDebug.value = true
                                         } else {
                                             LightTheme()
                                             light = true
+                                            if (blocksToRender.size >= 1) blocksToRender[debugBlockNumber].onDebug.value =
+                                                false
+                                            debugBlockNumber = 0
                                         }
                                     }
                                     offsetX = 0f
@@ -260,11 +235,11 @@ fun WindowContent(
                 }
                 Button(
                     onClick = {
-                        blocksToAdd = blocks
+                        blocksToAdd = blocksToRender
                         scope.launch { drawerState.open() }
-                        if (blocks.size >= 1 && !light) {
-                            blocks[0].onDebug.value = true
-                            count = 0
+                        if (blocksToRender.size >= 1 && !light) {
+                            blocksToRender[0].onDebug.value = true
+                            debugBlockNumber = 0
                         }
                     },
                     modifier = Modifier
@@ -294,48 +269,84 @@ fun WindowContent(
         }
     }
 }
-
+//@Composable
+//fun ModalContent(lines: MutableList<String>) {
+//    Row(modifier = Modifier.fillMaxWidth()
+//        .padding(20.dp)
+//        .defaultMinSize(50.dp, 50.dp)
+//    )
+//    {
+////        LazyColumn(
+////            contentPadding = PaddingValues(vertical = 8.dp),
+////            horizontalAlignment = Alignment.Start
+////        )
+////        {
+////            items(lines)
+////            { line ->
+////                Text(text = line, textAlign = TextAlign.Center, fontFamily = FontFamily.SansSerif)
+////            }
+////        }
+//        LazyColumn(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentPadding = PaddingValues(vertical = 8.dp),
+//        )
+//        {
+//            item()
+//            {
+//                Text(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    text = "Variables",
+//                    fontSize = 25.sp,
+//                    color = Color.White,
+//                    textAlign = TextAlign.End
+//                )
+//            }
+//            items(variables.toList())
+//            { line ->
+//                Text(
+//                    text = "${line.first} = ${line.second.value}",
+//                    textAlign = TextAlign.End,
+//                    fontFamily = FontFamily.SansSerif
+//                )
+//            }
+//
+//        }
+//    }
+//}
 @Composable
 fun ModalContent(lines: MutableList<String>) {
-    Box(
+    Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(20.dp)
             .defaultMinSize(50.dp, 50.dp)
     )
     {
         LazyColumn(
+            modifier = Modifier.fillMaxWidth(0.5f),
+            contentPadding = PaddingValues(vertical = 8.dp),
+        )
+        {
+            items(lines)
+            { line ->
+                Text(text = line, textAlign = TextAlign.Start, fontFamily = FontFamily.SansSerif)
+            }
+        }
+        LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 8.dp),
         )
         {
-            item()
-            {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Print",
-                    fontSize = 25.sp,
-                    color = Color.White
-                )
-            }
             items(lines)
-            { line ->
-                Text(text = line, textAlign = TextAlign.Center)
+            {
             }
             if (!light) {
-                item()
-                {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Variables",
-                        fontSize = 25.sp,
-                        color = Color.White
-                    )
-                }
                 items(variables.toList())
                 { line ->
                     Text(
                         text = "${line.first} = ${line.second.value}",
-                        textAlign = TextAlign.Center
+                        fontFamily = FontFamily.SansSerif,
+                        textAlign = TextAlign.End,
                     )
                 }
             }
@@ -377,7 +388,7 @@ fun ModalContent(lines: MutableList<String>) {
 //                verticalArrangement = Arrangement.spacedBy(10.dp)
 //            )
 //            {
-//                items(blocksToRender) { block ->
+//                items(blocksToRenderToRender) { block ->
 //                    block.element()
 //                }
 //            }
@@ -393,7 +404,7 @@ fun ModalContent(lines: MutableList<String>) {
 //            {
 //                FloatingActionButton(
 //                    onClick = {
-//                        val finalTasks = blocksToRender.toList();
+//                        val finalTasks = blocksToRenderToRender.toList();
 //                        lines.clear()
 //                        for ((index, element, item) in finalTasks){
 //                            start(item.value,lines)
@@ -414,7 +425,7 @@ fun ModalContent(lines: MutableList<String>) {
 //                }
 //                Button(
 //                    onClick = {
-//                        blocksToAdd = blocksToRender
+//                        blocksToRenderToAdd = blocksToRenderToRender
 //                        scope.launch { drawerState.open() }
 //                    },
 //                    modifier = Modifier

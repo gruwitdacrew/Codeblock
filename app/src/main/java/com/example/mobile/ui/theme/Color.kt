@@ -28,21 +28,21 @@ var bottom_bar_color = Color(0xFFA7C3FF)
 
 var drawer_content_color = Color(0xFF090F1D)
 
-var color_on_change_theme1 = Color(0xFF000000)
-var color_on_change_theme2 = Color(0xFF0036B3)
+var color_on_change_theme1 = mutableStateOf(Color(0xFF000000))
+var color_on_change_theme2 = mutableStateOf(Color(0xFF0036B3))
 
 var screen = mutableStateOf(R.drawable.screen_light)
 
 fun DarkTheme() {
-    color_on_change_theme1 = Color(0xFFFFFFFF)
-    color_on_change_theme2 = Color(0xFFFCDD1F)
+    color_on_change_theme1.value = Color(0xFFFFFFFF)
+    color_on_change_theme2.value = Color(0xFFFCDD1F)
     bottom_bar_color = Color(0xFF213152)
     screen.value = R.drawable.screen_dark
 }
 
 fun LightTheme() {
-    color_on_change_theme1 = Color(0xFF000000)
-    color_on_change_theme2 = Color(0xFF0036B3)
+    color_on_change_theme1.value = Color(0xFF000000)
+    color_on_change_theme2.value = Color(0xFF0036B3)
     bottom_bar_color = Color(0xFFA7C3FF)
     screen.value = R.drawable.screen_light
 }

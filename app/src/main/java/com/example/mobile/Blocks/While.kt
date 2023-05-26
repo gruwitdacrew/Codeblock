@@ -7,30 +7,13 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.DrawerState
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -43,16 +26,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobile.Block
-import com.example.mobile.BlockSample
+import com.example.mobile.*
 import com.example.mobile.R
-import com.example.mobile.TextFieldSample
-import com.example.mobile.blocksToAdd
+import com.example.mobile.Utils.BlockInformation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.UUID
+import java.util.*
 
 fun getWhileExpression(
     whileBlocks: MutableList<Block>,
@@ -68,23 +49,25 @@ fun getWhileExpression(
 
 @Composable
 fun While(
-    index: UUID,
+    view: BlockInformation,
     scope: CoroutineScope,
     drawerState: DrawerState,
-    blocks: MutableList<Block>
 ) {
+    val blocks = view.blocks
     val whileBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
     var condition by rememberSaveable { mutableStateOf("") }
-
-    val blockId = blocks.indexOf(blocks.find { it.id == index })
+    var index = blocks.indexOf(blocks.find { it.id == view.id })
+    LaunchedEffect(blocks.size){
+        index = blocks.indexOf(blocks.find { it.id == view.id })
+    }
 
     for (i in whileBlocksToRender) {
         LaunchedEffect(i.expression.value) {
-            blocks[blockId].expression.value = getWhileExpression(whileBlocksToRender, condition)
-            println(blocks[blockId].expression.value)
+            blocks[index].expression.value = getWhileExpression(whileBlocksToRender, condition)
+            println(blocks[index].expression.value)
         }
     }
-    BlockSample(index = index, blocks = blocks, shape = RoundedCornerShape(5), inside =
+    BlockSample(view = view, shape = RoundedCornerShape(5), inside =
     {
         Column(
             modifier = Modifier
@@ -116,7 +99,7 @@ fun While(
                 )
                 TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                     condition = newText
-                    blocks[blockId].expression.value =
+                    blocks[index].expression.value =
                         getWhileExpression(whileBlocksToRender, condition)
                 })
             }
@@ -158,7 +141,7 @@ fun While(
             }
             IconButton(
                 onClick = {
-                    blocks[blockId].visibleState.targetState = false
+                    blocks[index].visibleState.targetState = false
                 },
                 modifier = Modifier
                     .defaultMinSize(minWidth = 60.dp)

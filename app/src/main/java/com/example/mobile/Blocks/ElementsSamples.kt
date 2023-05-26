@@ -27,13 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.UUID
+import com.example.mobile.Utils.BlockInformation
+import java.util.*
 
 @SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
 @Composable
 fun BlockSample(
-    index: UUID,
-    blocks: MutableList<Block>,
+    view: BlockInformation,
     shape: Shape,
     inside: @Composable () -> Unit,
 ) {
@@ -41,11 +41,15 @@ fun BlockSample(
     var offsetY by remember { mutableStateOf(0f) }
     val localFocusManager = LocalFocusManager.current
     var elevation by remember { mutableStateOf(0f) }
-    val blockId = blocks.indexOf(blocks.find { it.id == index })
+    val blocks = view.blocks
+    var index = blocks.indexOf(blocks.find { it.id == view.id })
+    LaunchedEffect(blocks.size){
+        index = blocks.indexOf(blocks.find { it.id == view.id })
+    }
 
     Card(
         modifier = Modifier
-            .background(color = if (blocks[blockId].onDebug.value) Color.Red else Color.Transparent)
+            .background(color = if (blocks[index].onDebug.value) Color(0x8AFF3014) else Color.Transparent)
             .padding(10.dp)
             .defaultMinSize(400.dp, 70.dp)
             .fillMaxWidth(0.5f)
@@ -54,7 +58,7 @@ fun BlockSample(
                 width = 2.dp, color = Color.Black, shape = shape
             )
             .onGloballyPositioned { coordinates ->
-                blocks[blockId].offset.value =
+                blocks[index].offset.value =
                     with(localDensity) { coordinates.positionInWindow().y.toDp() + coordinates.size.height.toDp() / 2 }
             }
             .shadow(elevation = elevation.dp, spotColor = Color.Black, shape = shape)
@@ -71,7 +75,7 @@ fun BlockSample(
                     {
                         alpha.value = 1f
                         elevation = 1f
-                        putInPlace(with(localDensity) { offsetY.toDp() }, index, blocks)
+                        putInPlace(with(localDensity) { offsetY.toDp() }, view.id, blocks)
                         offsetY = 0f
                         offsetX = 0f
                     },
@@ -111,7 +115,7 @@ fun TextFieldSample(
         onValueChange = { newText ->
             run {
                 onValueChange(newText)
-                if (newText.matches(Regex("[a-zA-z0-9.,+\\-/*<>=!]*"))) {
+                if (newText.matches(Regex("[a-zA-z0-9.,+\\-/*<>=!()]*"))) {
                     text = newText
                 }
             }
