@@ -13,10 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -29,20 +25,18 @@ import androidx.compose.ui.unit.sp
 import com.example.mobile.Utils.BlockInformation
 import com.example.mobile.ui.theme.print_color_1
 import com.example.mobile.ui.theme.print_color_2
-import java.util.*
 
 
 @Composable
-fun PrintBlock(
+fun Continue(
     view: BlockInformation,
 ) {
-    var text by rememberSaveable { mutableStateOf("") }
     val blocks = view.blocks
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){
         index = blocks.indexOf(blocks.find { it.id == view.id })
     }
-
+    blocks[index].expression.value = "continue"
     BlockSample(view = view, shape = RoundedCornerShape(50), inside =
     {
         Row(
@@ -55,7 +49,7 @@ fun PrintBlock(
         )
         {
             Text(
-                "Print",
+                "Continue",
                 modifier = Modifier
                     .padding(14.dp)
                     .width(60.dp),
@@ -63,15 +57,6 @@ fun PrintBlock(
                 color = Color.White,
                 fontFamily = FontFamily(Font(R.font.fedra_sans)),
                 textAlign = TextAlign.Center
-            )
-
-            TextFieldSample(
-                modifier = Modifier.weight(2f),
-                onValueChange = { newText ->
-                    text = newText
-                    blocks[index].expression.value = "/$text"
-                    println(blocks[index].expression.value)
-                },
             )
             IconButton(
                 onClick = {
