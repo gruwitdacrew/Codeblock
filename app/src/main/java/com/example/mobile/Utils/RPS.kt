@@ -1,10 +1,14 @@
 package com.example.mobile
 
+import com.example.mobile.Utils.Translate
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+
 class RPS {
     companion object{
 
         @JvmStatic
-        public fun calculate(dictionary: MutableMap<String, String>, input: String): String{
+        public fun calculate(dictionary: MutableMap<String, Variable>, input: String): Variable{
             return fromRPS(dictionary, toRPS(input))
         }
         @JvmStatic
@@ -14,16 +18,24 @@ class RPS {
             var charNow:Char;
             for(i in 0 until input.length){
                 charNow = input[i]
-                if(charNow.toString().matches("[a-zA-Z0-9]+".toRegex())) answer+=charNow;
-                else if(charNow != ' ' && !(input[i-1].toString().matches("[<>=]".toRegex()) && input[i] == '=')){
+                if(charNow.toString().matches("[a-zA-Z0-9\"\"]".toRegex())) answer+=charNow;
+                else if(charNow != ' ' && !(input[i-1].toString().matches("[<>=!]".toRegex()) && input[i] == '=')){
                     if(answer[answer.length-1] != ' ') answer+=" ";
                     when(charNow){
                         ')' -> {
                             while(stack.size > 0 && stack.last() != "("){
-                                answer+=stack.last()
+                                answer+=(stack.last() + " ")
                                 stack.removeLast()
                             }
                             stack.removeLast();
+                        }
+                        ']' -> {
+                            while(stack.size > 0 && stack.last() != "["){
+                                answer+=(stack.last() + " ")
+                                stack.removeLast()
+                            }
+                            stack.removeLast();
+                            answer+="index"
                         }
                         '|', '&' -> {
                             while(stack.size > 0 && stack.last().matches("[+/*%<>=|&-]+".toRegex())) {
@@ -32,7 +44,7 @@ class RPS {
                             }
                             stack.addLast(charNow.toString())
                         }
-                        '<','>','=' -> {
+                        '<','>','=','!' -> {
                             while(stack.size > 0 && stack.last().matches("[+/*%<>=-]+".toRegex())) {
                                 answer+=(stack.last() + " ");
                                 stack.removeLast()
@@ -70,36 +82,68 @@ class RPS {
         }
 
         @JvmStatic
-        public fun fromRPS(dictionary: MutableMap<String, String>, input: String) : String{
+        public fun fromRPS(dictionary: MutableMap<String, Variable>, input: String) : Variable{
             val listOfActions = input.split(' ');
-            var stack = ArrayDeque<String>()
+            var stack = ArrayDeque<Variable>()
             for(i in listOfActions){
-                if(i.matches("[+/*%><|&=-]+".toRegex())){
-                    var first = stack.last();
-                    if(first.matches("[a-zA-Z]+".toRegex())) first = dictionary[first].toString()
+                if(i.matches("[+/*%><|&=!-]+|index".toRegex())){
+                    val first = stack.last();
                     stack.removeLast();
-
-                    var second = stack.last();
-                    if(second.matches("[a-zA-Z]+".toRegex())) second = dictionary[second].toString()
+                    val second = stack.last();
                     stack.removeLast();
                     when(i){
-                        "-" -> stack.addLast((second.toInt() - first.toInt()).toString());
-                        "+" -> stack.addLast((second.toInt() + first.toInt()).toString());
-                        "*" -> stack.addLast((second.toInt() * first.toInt()).toString());
-                        "/" -> stack.addLast((second.toInt() / first.toInt()).toString());
-                        "%" -> stack.addLast((second.toInt() % first.toInt()).toString());
-                        "|" -> stack.addLast(booleanToInt(second.toInt() != 0 || first.toInt() != 0).toString());
-                        "&" -> stack.addLast(booleanToInt(second.toInt() != 0 && first.toInt() != 0).toString());
-                        ">" -> stack.addLast(booleanToInt(second.toInt() > first.toInt()).toString());
-                        "<" -> stack.addLast(booleanToInt(second.toInt() < first.toInt()).toString());
-                        ">=" -> stack.addLast(booleanToInt(second.toInt() >= first.toInt()).toString());
-                        "<=" -> stack.addLast(booleanToInt(second.toInt() <= first.toInt()).toString());
-                        "==" -> stack.addLast(booleanToInt(second.toInt() == first.toInt()).toString());
+                        "-" ->{
+                            stack.addLast(Variable((second.value.toInt() - first.value.toInt()).toString(), "Int"));
+                        }
+                        "+" -> {
+                            if(first.type == "String" || second.type == "String") stack.addLast(Variable((second.value + first.value), "String"))
+                            else stack.addLast(Variable((second.value.toInt() + first.value.toInt()).toString(), "Int"));
+                        };
+                        "*" ->{
+                            stack.addLast(Variable((second.value.toInt() - first.value.toInt()).toString(), "Int"));
+                        }
+                        "/" ->{
+                            stack.addLast(Variable((second.value.toInt() / first.value.toInt()).toString(), "Int"));
+                        }
+                        "%" ->{
+                            stack.addLast(Variable((second.value.toInt() % first.value.toInt()).toString(), "Int"));
+                        }
+                        "|" ->{
+                            stack.addLast(Variable((Translate.toBool(second) || Translate.toBool(first)).toString(), "Bool"))
+                        }
+                        "&" ->{
+                            stack.addLast(Variable((Translate.toBool(second) && Translate.toBool(first)).toString(), "Bool"))
+                        }
+                        ">" ->{
+                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() > first.value.toInt()).toString(), "Bool"))
+                            else stack.addLast(Variable((second.value > first.value).toString(), "Bool"))
+                        }
+                        "<" ->{
+                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() < first.value.toInt()).toString(), "Bool"))
+                            else stack.addLast(Variable((second.value < first.value).toString(), "Bool"))
+                        }
+                        ">=" ->{
+                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() >= first.value.toInt()).toString(), "Bool"))
+                            else stack.addLast(Variable((second.value >= first.value).toString(), "Bool"))
+                        }
+                        "<=" ->{
+                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() <= first.value.toInt()).toString(), "Bool"))
+                            else stack.addLast(Variable((second.value <= first.value).toString(), "Bool"))
+                        }
+                        "==" -> stack.addLast(Variable((second.value == first.value).toString(), "Bool"))
+                        "!=" -> stack.addLast(Variable((second.value != first.value).toString(), "Bool"))
+                        "index" ->{
+                            if(second.type == "String") stack.addLast(Variable(second.value[first.value.toInt()].toString(),"String"));
+                            else stack.addLast(Variable(Json.decodeFromString<List<String>>(second.value)[first.value.toInt()],"${"(?<=<)[A-Za-z]+(?=>)".toRegex().find(second.type)?.value}"));
+                        }
                     }
                 }
-                else stack.addLast(i)
+                else if(i != " "){
+                    if(dictionary.containsKey(i)) stack.addLast(dictionary[i]!!)
+                    else stack.addLast(Variable(i, Translate.getType(i)))
+                }
             }
-            return if (variables.containsKey(stack.first())) variables[stack.first()]!! else stack.first()
+            return if (dictionary.containsKey(stack.first().value)) dictionary[stack.first().value]!! else stack.first()
 
         }
     }

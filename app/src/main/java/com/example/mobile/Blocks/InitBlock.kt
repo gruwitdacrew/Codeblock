@@ -1,187 +1,198 @@
 package com.example.mobile
 
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.mobile.ui.theme.assignment_color_1
+import com.example.mobile.ui.theme.assignment_color_2
+import com.example.mobile.ui.theme.init_color_1
+import com.example.mobile.ui.theme.init_color_2
 import java.util.UUID
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InitBlock(index: UUID, blocks: MutableList<Block>) {
-    var key by remember { mutableStateOf("") }
+    var key by rememberSaveable { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("") }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
-
-    val localDensity = LocalDensity.current
     val blockId = blocks.indexOf(blocks.find { it.id == index })
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-
-    Card(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-            .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-            .onGloballyPositioned { coordinates ->
-                blocks[blockId].offset.value =
-                    with(localDensity) { coordinates.positionInParent().y.toDp() + coordinates.size.height.toDp() / 2 }
-            }
-            .pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(
-                    onDragEnd = {
-                        putInPlace(with(localDensity) { offsetY.toDp() }, index, blocks)
-                        offsetY = 0f
-                        offsetX = 0f
-                    }
-                ) { change, dragAmount ->
-                    change.consume()
-                    offsetX += dragAmount.x
-                    offsetY += dragAmount.y
-                }
-            },
-        shape = RoundedCornerShape(16.dp),
-        backgroundColor = Color.LightGray
-    ) {
+    BlockSample(index = index, blocks = blocks, shape = RoundedCornerShape(50.dp))
+    {
         Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(init_color_1, init_color_2)
+                    )
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        )
+        {
             Box(
                 modifier = Modifier
-                    .padding(end = 8.dp)
-                    .width(80.dp)
-            ) {
+                    .background(color = Color.Red)
+                    .width(110.dp)
+                    .fillMaxHeight()
+            )
+            {
                 var expanded by remember { mutableStateOf(false) }
                 DropdownMenu(
+                    modifier = Modifier
+                        .background(color = Color.Black),
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
+                    onDismissRequest = { expanded = false },
+                )
+                {
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Int"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "i;Int;$key"
+                            blocks[blockId].expression.value = "iInt;$key"
                         }
                     ) {
-                        Text("Int")
+                        Text(
+                            text = "Int",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
+                        )
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "String"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "i;String;$key"
-                            println("i;$selectedType;$key")
+                            blocks[blockId].expression.value = "iString;$key"
                         }
                     ) {
-                        Text("String")
+                        Text(text = "String",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center)
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Bool"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "i;Bool;$key"
+                            blocks[blockId].expression.value = "iBool;$key"
                         }
                     ) {
-                        Text("Bool")
+                        Text("Bool",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center)
                     }
                     DropdownMenuItem(
                         onClick = {
-                            selectedType = "Array<Int>"
+                            selectedType = "Array\n<Int>"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "i;Array<Int>;$key"
+                            blocks[blockId].expression.value = "iArray<Int>;$key"
                         }
                     ) {
-                        Text("Array<Int>")
+                        Text("Array\n<Int>",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center)
                     }
                     DropdownMenuItem(
                         onClick = {
-                            selectedType = "Array<String>"
+                            selectedType = "Array\n<String>"
                             expanded = false
                             key = key.trim()
-                            blocks[blockId].expression.value = "i;Array<String>;$key"
+                            blocks[blockId].expression.value = "iArray<String>;$key"
                         }
                     ) {
-                        Text("Array<String>")
-                    }
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedType = "Array<Bool>"
-                            expanded = false
-                            key = key.trim()
-                            blocks[blockId].expression.value = "i;Array<Bool>;$key"
-                        }
-                    ) {
-                        Text("Array<Bool>")
-                    }
-                }
-                    Button(
-                        onClick = { expanded = true },
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Text(selectedType.ifBlank { "Select Type" })
-                    }
-                }
-                TextField(
-                    value = key,
-                    onValueChange = {
-//                    key = it.trim()
-//                    blocks[blockId].expression.value = "i$key"
-                        key = it.trim()
-                        blocks[blockId].expression.value = "i;$selectedType;$key"
-                        println("i;$selectedType;$key")
-                    },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide()
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    label = { Text("Название переменной") },
-                    modifier = Modifier.weight(1f)
-                )
+                        Text("Array\n<String>",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 15.sp,
 
-                IconButton(
-                    onClick = {
-                        handleBlockDelete(index, blocks)
-                    },
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Icon(Icons.Default.Delete, contentDescription = "delete")
+                            textAlign = TextAlign.Center)
+                    }
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedType = "Array\n<Bool>"
+                            expanded = false
+                            key = key.trim()
+                            blocks[blockId].expression.value = "iArray<Bool>;$key"
+                        }
+                    ) {
+                        Text("Array\n<Bool>",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
+                Button(
+                    onClick = { expanded = true },
+                    colors = ButtonDefaults.buttonColors(init_color_2),
+                    modifier = Modifier
+                        .defaultMinSize(minHeight = 70.dp)
+                        .fillMaxSize()
+                )
+                {
+                    Text(
+                        text = selectedType.ifBlank { "Select\nType" },
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            TextFieldSample(modifier = Modifier.weight(2f), onValueChange = {
+                key = it.trim()
+                blocks[blockId].expression.value = "i$selectedType;$key"
+            })
+
+            IconButton(
+                onClick = {
+                    blocks[blockId].visibleState.targetState = false
+                },
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 60.dp)
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
             }
         }
     }
+}
