@@ -1,50 +1,75 @@
 package com.example.mobile
 
-import android.view.ScrollCaptureTarget
-import androidx.compose.animation.*
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.*
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.DrawerState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Text
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobile.Utils.start
-import com.example.mobile.ui.theme.*
+import com.example.mobile.ui.theme.DarkTheme
+import com.example.mobile.ui.theme.LightTheme
+import com.example.mobile.ui.theme.bottom_bar_color
+import com.example.mobile.ui.theme.color_on_change_theme1
+import com.example.mobile.ui.theme.color_on_change_theme2
+import com.example.mobile.ui.theme.condition_color_1
+import com.example.mobile.ui.theme.condition_color_2
+import com.example.mobile.ui.theme.cycle_color_1
+import com.example.mobile.ui.theme.cycle_color_2
+import com.example.mobile.ui.theme.screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.time.format.TextStyle
 
 var light = true
+
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WindowContent(
@@ -53,7 +78,7 @@ fun WindowContent(
 ) {
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
-    val lines = remember{ mutableStateListOf<String>() }
+    val lines = remember { mutableStateListOf<String>() }
     val localFocusManager = LocalFocusManager.current
     var offsetX by remember { mutableStateOf(0f) }
     var count = 0
@@ -93,9 +118,11 @@ fun WindowContent(
                     }
             )
             {
-                items(items = blocks, key = {it.id})
+                items(items = blocks, key = { it.id })
                 { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocks.remove(block)
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocks.remove(
+                        block
+                    )
                     AnimatedVisibility(
                         modifier = Modifier
                             .animateItemPlacement(),
@@ -146,31 +173,25 @@ fun WindowContent(
             {
                 FloatingActionButton(
                     onClick = {
-                        val finalTasks = blocks.toList();
+                        val finalTasks = blocks.toList()
                         lines.clear()
-                        if (light)
-                        {
-                            for ((index, element, item) in finalTasks){
-                                if (item.value.length > 1){
-                                    start(item.value,lines)
+                        if (light) {
+                            for ((index, element, item) in finalTasks) {
+                                if (item.value.length > 1) {
+                                    start(item.value, lines)
                                 }
                             }
-                        }
-                        else
-                        {
+                        } else {
                             blocks[count].onDebug.value = false
-                            for (j in 0..count)
-                            {
-                                if (finalTasks[j].expression.value.length > 1)
-                                {
+                            for (j in 0..count) {
+                                if (finalTasks[j].expression.value.length > 1) {
                                     start(finalTasks[j].expression.value, lines)
                                 }
                             }
-                            if (count == blocks.size-1)
-                            {
+                            if (count == blocks.size - 1) {
                                 count = 0
                             }
-                            blocks[count+1].onDebug.value = true
+                            blocks[count + 1].onDebug.value = true
                             count++
                         }
                         // Отобразить модальное окно
@@ -182,7 +203,12 @@ fun WindowContent(
                         .padding(horizontal = 50.dp)
                         .size(80.dp, 60.dp)
                         .background(
-                            brush = Brush.linearGradient(listOf(color_on_change_theme1, color_on_change_theme2)),
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    color_on_change_theme1,
+                                    color_on_change_theme2
+                                )
+                            ),
                             shape = RoundedCornerShape(55)
                         )
                         .offset { IntOffset(offsetX.toInt(), 0) }
@@ -196,14 +222,11 @@ fun WindowContent(
                                 onDragEnd =
                                 {
                                     if (offsetX >= 80f) {
-                                        if (light)
-                                        {
+                                        if (light) {
                                             DarkTheme()
                                             light = false
                                             if (blocks.size >= 1) blocks[0].onDebug.value = true
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             LightTheme()
                                             light = true
                                         }
@@ -229,14 +252,17 @@ fun WindowContent(
                     backgroundColor = Color.Black,
                     shape = RoundedCornerShape(50),
                 ) {
-                    Image(painter = painterResource(id = R.drawable.compile), contentDescription = null, contentScale = ContentScale.Crop)
+                    Image(
+                        painter = painterResource(id = R.drawable.compile),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
                 }
                 Button(
                     onClick = {
                         blocksToAdd = blocks
-                        scope.launch { drawerState.open()}
-                        if (blocks.size >= 1 && !light)
-                        {
+                        scope.launch { drawerState.open() }
+                        if (blocks.size >= 1 && !light) {
                             blocks[0].onDebug.value = true
                             count = 0
                         }
@@ -258,7 +284,11 @@ fun WindowContent(
                     shape = RoundedCornerShape(50),
                 )
                 {
-                    Image(painter = painterResource(id = R.drawable.add), contentDescription = null, contentScale = ContentScale.Fit)
+                    Image(
+                        painter = painterResource(id = R.drawable.add),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit
+                    )
                 }
             }
         }
@@ -280,21 +310,33 @@ fun ModalContent(lines: MutableList<String>) {
         {
             item()
             {
-                Text(modifier = Modifier.fillMaxWidth(), text = "Print", fontSize = 25.sp, color = Color.White)
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Print",
+                    fontSize = 25.sp,
+                    color = Color.White
+                )
             }
             items(lines)
-            {line->
+            { line ->
                 Text(text = line, textAlign = TextAlign.Center)
             }
-            if (!light)
-            {
+            if (!light) {
                 item()
                 {
-                    Text(modifier = Modifier.fillMaxWidth(), text = "Variables", fontSize = 25.sp, color = Color.White)
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Variables",
+                        fontSize = 25.sp,
+                        color = Color.White
+                    )
                 }
                 items(variables.toList())
-                {line->
-                    Text(text = "${line.first} = ${line.second.value}", textAlign = TextAlign.Center)
+                { line ->
+                    Text(
+                        text = "${line.first} = ${line.second.value}",
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }

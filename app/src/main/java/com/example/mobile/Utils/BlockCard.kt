@@ -1,4 +1,5 @@
 package com.example.mobile
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
@@ -23,8 +24,7 @@ fun BlockCard(
     color: Color,
     shape: Shape,
     onClick: () -> Unit
-)
-{
+) {
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -52,15 +52,11 @@ fun BlockCard(
     }
 }
 
-fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>)
-{
+fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>) {
     val index = blocks.indexOf(blocks.find { it.id == blockId })
-    if (offsetY > 0.dp)
-    {
-        for (i in index+1 until blocks.size)
-        {
-            if (blocks[index].offset.value <= blocks[i].offset.value)
-            {
+    if (offsetY > 0.dp) {
+        for (i in index + 1 until blocks.size) {
+            if (blocks[index].offset.value <= blocks[i].offset.value) {
                 blocks.add(i, blocks[index])
                 blocks.removeAt(index)
                 return
@@ -68,20 +64,16 @@ fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>)
         }
         blocks.add(blocks[index])
         blocks.removeAt(index)
-    }
-    else
-    {
-        for (i in index - 1 downTo 0)
-        {
-            if (blocks[index].offset.value >= blocks[i].offset.value)
-            {
-                blocks.add(i+1, blocks[index])
-                blocks.removeAt(index+1)
+    } else {
+        for (i in index - 1 downTo 0) {
+            if (blocks[index].offset.value >= blocks[i].offset.value) {
+                blocks.add(i + 1, blocks[index])
+                blocks.removeAt(index + 1)
                 return
             }
         }
         blocks.add(0, blocks[index])
-        blocks.removeAt(index+1)
+        blocks.removeAt(index + 1)
     }
     return
 }

@@ -1,4 +1,5 @@
 package com.example.mobile
+
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -32,16 +33,15 @@ import java.util.UUID
 @Composable
 fun BlockSample(
     index: UUID,
-    blocks:MutableList<Block>,
+    blocks: MutableList<Block>,
     shape: Shape,
     inside: @Composable () -> Unit,
-)
-{
+) {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     val localFocusManager = LocalFocusManager.current
     var elevation by remember { mutableStateOf(0f) }
-    val blockId = blocks.indexOf(blocks.find { it.id == index } )
+    val blockId = blocks.indexOf(blocks.find { it.id == index })
 
     Card(
         modifier = Modifier
@@ -54,7 +54,8 @@ fun BlockSample(
                 width = 2.dp, color = Color.Black, shape = shape
             )
             .onGloballyPositioned { coordinates ->
-                blocks[blockId].offset.value = with(localDensity) { coordinates.positionInWindow().y.toDp() + coordinates.size.height.toDp() / 2 }
+                blocks[blockId].offset.value =
+                    with(localDensity) { coordinates.positionInWindow().y.toDp() + coordinates.size.height.toDp() / 2 }
             }
             .shadow(elevation = elevation.dp, spotColor = Color.Black, shape = shape)
             .pointerInput(Unit)
@@ -99,8 +100,7 @@ fun BlockSample(
 fun TextFieldSample(
     modifier: Modifier,
     onValueChange: (String) -> Unit,
-)
-{
+) {
     val focusManager = LocalFocusManager.current
     var text by remember {
         mutableStateOf("")
@@ -108,7 +108,7 @@ fun TextFieldSample(
 
     TextField(
         value = text,
-        onValueChange = {newText->
+        onValueChange = { newText ->
             run {
                 onValueChange(newText)
                 if (newText.matches(Regex("[a-zA-z0-9.,+\\-/*<>=!]*"))) {
@@ -118,7 +118,7 @@ fun TextFieldSample(
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
-            onDone = {keyboardController.hide(); focusManager.clearFocus()}),
+            onDone = { keyboardController.hide(); focusManager.clearFocus() }),
         singleLine = true,
         modifier = modifier
 //            .width(size)
