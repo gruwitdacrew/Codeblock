@@ -200,6 +200,9 @@ class RPS {
                             val variableNow = Translate.getVariable(values[index])
                             when(arguments[index][0]){
                                 'i' -> {
+                                    if(arguments[index].substring(1).split(";")[0] != variableNow.type){
+                                        return Variable("Required ${arguments[index].substring(1).split(";")[0]} but got ${variableNow.type}", "Exception")
+                                    }
                                     newDictionary[arguments[index].substring(1).split(";")[1]] = variableNow
                                 }
                                 '=' -> {
