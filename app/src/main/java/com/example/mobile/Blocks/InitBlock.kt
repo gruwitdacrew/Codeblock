@@ -1,13 +1,30 @@
 package com.example.mobile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -20,16 +37,15 @@ import androidx.compose.ui.unit.sp
 import com.example.mobile.Utils.BlockInformation
 import com.example.mobile.ui.theme.init_color_1
 import com.example.mobile.ui.theme.init_color_2
-import java.util.*
 
 @Composable
-fun InitBlock(view: BlockInformation,) {
+fun InitBlock(view: BlockInformation) {
     var key by rememberSaveable { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("") }
     val blocks = view.blocks
     var index = blocks.indexOf(blocks.find { it.id == view.id })
 
-    LaunchedEffect(blocks.size){
+    LaunchedEffect(blocks.size) {
         index = blocks.indexOf(blocks.find { it.id == view.id })
     }
 

@@ -1,12 +1,25 @@
-package com.example.mobile
+package com.example.mobile.ui.theme
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.DrawerState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -15,24 +28,36 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mobile.Block
+import com.example.mobile.BlockSample
+import com.example.mobile.R
+import com.example.mobile.TextFieldSample
 import com.example.mobile.Utils.BlockInformation
-import com.example.mobile.ui.theme.assignment_color_1
-import com.example.mobile.ui.theme.assignment_color_2
+import com.example.mobile.blocksToAdd
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
-fun Assignment(view: BlockInformation) {
+fun PushBack(view: BlockInformation) {
     var variable by rememberSaveable { mutableStateOf("") }
     var expression by rememberSaveable { mutableStateOf("") }
     val blocks = view.blocks
@@ -56,20 +81,29 @@ fun Assignment(view: BlockInformation) {
             horizontalArrangement = Arrangement.Center
         )
         {
-            TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
+            Text(
+                text = "PushBack",
+                color = Color.White,
+                fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                fontSize = 26.sp,
+                modifier = Modifier
+                    .width(130.dp),
+                textAlign = TextAlign.Center
+            )
+            TextFieldSample(modifier = Modifier.weight(3f), onValueChange = { newText ->
                 variable = newText
                 blocks[index].expression.value = "=$variable=$expression"
             })
             Text(
-                text = "=",
+                text = ".",
                 color = Color.White,
                 fontFamily = FontFamily(Font(R.font.fedra_sans)),
                 fontSize = 30.sp,
                 modifier = Modifier
-                    .width(40.dp),
+                    .width(10.dp),
                 textAlign = TextAlign.Center
             )
-            TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
+            TextFieldSample(modifier = Modifier.weight(3f), onValueChange = { newText ->
                 expression = newText
                 blocks[index].expression.value = "=$variable=$expression"
             })

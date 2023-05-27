@@ -10,12 +10,36 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.DrawerState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Text
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -29,13 +53,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mobile.Utils.start
-import com.example.mobile.ui.theme.*
+import com.example.mobile.ui.theme.DarkTheme
+import com.example.mobile.ui.theme.LightTheme
+import com.example.mobile.ui.theme.bottom_bar_color
+import com.example.mobile.ui.theme.color_on_change_theme1
+import com.example.mobile.ui.theme.color_on_change_theme2
+import com.example.mobile.ui.theme.condition_color_1
+import com.example.mobile.ui.theme.condition_color_2
+import com.example.mobile.ui.theme.cycle_color_1
+import com.example.mobile.ui.theme.cycle_color_2
+import com.example.mobile.ui.theme.screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-var light= mutableStateOf(true)
+var light = mutableStateOf(true)
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -123,7 +155,10 @@ fun WindowContent(
                         val finalTasks = blocksToRender.toList()
                         lines.clear()
                         variables.clear()
-                        start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
+                        start(
+                            "*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]",
+                            lines = lines
+                        )
                         if (light.value) {
                             for ((index, element, item) in finalTasks) {
                                 if (item.value.length > 1) {
@@ -177,7 +212,8 @@ fun WindowContent(
                                         if (light.value) {
                                             DarkTheme()
                                             light.value = false
-                                            if (blocksToRender.size >= 1) blocksToRender[0].onDebug.value = true
+                                            if (blocksToRender.size >= 1) blocksToRender[0].onDebug.value =
+                                                true
                                         } else {
                                             LightTheme()
                                             light.value = true
@@ -249,50 +285,7 @@ fun WindowContent(
         }
     }
 }
-//@Composable
-//fun ModalContent(lines: MutableList<String>) {
-//    Row(modifier = Modifier.fillMaxWidth()
-//        .padding(20.dp)
-//        .defaultMinSize(50.dp, 50.dp)
-//    )
-//    {
-////        LazyColumn(
-////            contentPadding = PaddingValues(vertical = 8.dp),
-////            horizontalAlignment = Alignment.Start
-////        )
-////        {
-////            items(lines)
-////            { line ->
-////                Text(text = line, textAlign = TextAlign.Center, fontFamily = FontFamily.SansSerif)
-////            }
-////        }
-//        LazyColumn(
-//            modifier = Modifier.fillMaxWidth(),
-//            contentPadding = PaddingValues(vertical = 8.dp),
-//        )
-//        {
-//            item()
-//            {
-//                Text(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    text = "Variables",
-//                    fontSize = 25.sp,
-//                    color = Color.White,
-//                    textAlign = TextAlign.End
-//                )
-//            }
-//            items(variables.toList())
-//            { line ->
-//                Text(
-//                    text = "${line.first} = ${line.second.value}",
-//                    textAlign = TextAlign.End,
-//                    fontFamily = FontFamily.SansSerif
-//                )
-//            }
-//
-//        }
-//    }
-//}
+
 @Composable
 fun ModalContent(lines: MutableList<String>) {
     Row(

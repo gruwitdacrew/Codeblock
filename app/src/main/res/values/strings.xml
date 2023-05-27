@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">mobile</string>
     <string name="title_activity_welcome_screen">WelcomeScreen</string>
+    <string name="function_drawer_text">Function</string>
+    <string name="pushback_drawer_text">PushBack</string>
+    <string name="void_drawer_text">Void</string>
+    <string name="return_drawer_text">Return</string>
+    <string name="for_drawer_text">For</string>
+    <string name="while_drawer_text">While</string>
+    <string name="if_drawer_text">If</string>
+    <string name="init_drawer_text">Variable</string>
+    <string name="assignment_drawer_text">Assignment</string>
+    <string name="print_drawer_text">Print</string>
 </resources>

@@ -43,7 +43,7 @@ fun BlockSample(
     var elevation by remember { mutableStateOf(0f) }
     val blocks = view.blocks
     var index = blocks.indexOf(blocks.find { it.id == view.id })
-    LaunchedEffect(blocks.size){
+    LaunchedEffect(blocks.size) {
         index = blocks.indexOf(blocks.find { it.id == view.id })
     }
 

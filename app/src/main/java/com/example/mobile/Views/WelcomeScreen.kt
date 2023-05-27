@@ -103,7 +103,7 @@ class WelcomeScreen : ComponentActivity() {
                         shape = RoundedCornerShape(50)
                     ) {
                         Text(
-                            text = "+ iBlockFile",
+                            text = "Start",
                             textAlign = TextAlign.Center,
                             fontSize = 30.sp,
                             color = Color.White,
