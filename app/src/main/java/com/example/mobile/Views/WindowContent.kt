@@ -35,7 +35,7 @@ import com.example.mobile.ui.theme.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-var light = true
+var light = mutableStateOf(true)
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -87,9 +87,7 @@ fun WindowContent(
             {
                 items(items = blocksToRender, key = { it.id })
                 { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocksToRender.remove(
-                        block
-                    )
+                    if (!block.visibleState.currentState && !block.visibleState.targetState) blocksToRender.remove(block)
                     AnimatedVisibility(
                         modifier = Modifier
                             .animateItemPlacement(),
@@ -144,7 +142,7 @@ fun WindowContent(
                         lines.clear()
                         variables.clear()
                         start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
-                        if (light) {
+                        if (light.value) {
                             for ((index, element, item) in finalTasks) {
                                 if (item.value.length > 1) {
                                     start(item.value, lines)
@@ -194,13 +192,13 @@ fun WindowContent(
                                 onDragEnd =
                                 {
                                     if (offsetX >= 80f) {
-                                        if (light) {
+                                        if (light.value) {
                                             DarkTheme()
-                                            light = false
+                                            light.value = false
                                             if (blocksToRender.size >= 1) blocksToRender[0].onDebug.value = true
                                         } else {
                                             LightTheme()
-                                            light = true
+                                            light.value = true
                                             if (blocksToRender.size >= 1) blocksToRender[debugBlockNumber].onDebug.value =
                                                 false
                                             debugBlockNumber = 0
@@ -235,9 +233,10 @@ fun WindowContent(
                 }
                 Button(
                     onClick = {
+                        chooseIn.value  = "Window"
                         blocksToAdd = blocksToRender
                         scope.launch { drawerState.open() }
-                        if (blocksToRender.size >= 1 && !light) {
+                        if (blocksToRender.size >= 1 && !light.value) {
                             blocksToRender[0].onDebug.value = true
                             debugBlockNumber = 0
                         }
@@ -269,50 +268,6 @@ fun WindowContent(
         }
     }
 }
-//@Composable
-//fun ModalContent(lines: MutableList<String>) {
-//    Row(modifier = Modifier.fillMaxWidth()
-//        .padding(20.dp)
-//        .defaultMinSize(50.dp, 50.dp)
-//    )
-//    {
-////        LazyColumn(
-////            contentPadding = PaddingValues(vertical = 8.dp),
-////            horizontalAlignment = Alignment.Start
-////        )
-////        {
-////            items(lines)
-////            { line ->
-////                Text(text = line, textAlign = TextAlign.Center, fontFamily = FontFamily.SansSerif)
-////            }
-////        }
-//        LazyColumn(
-//            modifier = Modifier.fillMaxWidth(),
-//            contentPadding = PaddingValues(vertical = 8.dp),
-//        )
-//        {
-//            item()
-//            {
-//                Text(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    text = "Variables",
-//                    fontSize = 25.sp,
-//                    color = Color.White,
-//                    textAlign = TextAlign.End
-//                )
-//            }
-//            items(variables.toList())
-//            { line ->
-//                Text(
-//                    text = "${line.first} = ${line.second.value}",
-//                    textAlign = TextAlign.End,
-//                    fontFamily = FontFamily.SansSerif
-//                )
-//            }
-//
-//        }
-//    }
-//}
 @Composable
 fun ModalContent(lines: MutableList<String>) {
     Row(
@@ -340,11 +295,11 @@ fun ModalContent(lines: MutableList<String>) {
             items(lines)
             {
             }
-            if (!light) {
+            if (!light.value) {
                 items(variables.toList())
                 { line ->
                     Text(
-                        text = "${line.first} = ${line.second.value}",
+                        text = "${line.first} = ${if (line.second.type.length<line.second.value.length) line.second.type else line.second.value}",
                         fontFamily = FontFamily.SansSerif,
                         textAlign = TextAlign.End,
                     )

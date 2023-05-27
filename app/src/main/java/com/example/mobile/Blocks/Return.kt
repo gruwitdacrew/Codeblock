@@ -30,7 +30,8 @@ import com.example.mobile.ui.theme.print_color_2
 @Composable
 fun Return(
     view: BlockInformation
-) {
+)
+{
     val blocks  = view.blocks
     var text by rememberSaveable { mutableStateOf("") }
 
@@ -52,11 +53,12 @@ fun Return(
             Text("Return",
                 modifier = Modifier
                     .padding(14.dp)
-                    .width(60.dp),
+                    .wrapContentWidth(),
                 fontSize = 20.sp,
                 color = Color.White,
                 fontFamily = FontFamily(Font(R.font.fedra_sans)),
-                textAlign = TextAlign.Center)
+                textAlign = TextAlign.Center
+            )
 
             TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                 text = newText
@@ -64,7 +66,7 @@ fun Return(
             )
             IconButton(
                 onClick = {
-                    handleBlockDelete(view.id, blocks)
+                    blocks[index].visibleState.targetState = false
                 },
                 modifier = Modifier
                     .width(60.dp)

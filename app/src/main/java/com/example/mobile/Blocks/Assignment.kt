@@ -25,7 +25,7 @@ import com.example.mobile.ui.theme.assignment_color_2
 import java.util.*
 
 @Composable
-fun Assignment(view: BlockInformation,)
+fun Assignment(view: BlockInformation)
 {
     var variable by rememberSaveable { mutableStateOf("") }
     var expression by rememberSaveable { mutableStateOf("") }

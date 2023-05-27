@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -42,6 +43,7 @@ fun BlockSample(
     val localFocusManager = LocalFocusManager.current
     var elevation by remember { mutableStateOf(0f) }
     val blocks = view.blocks
+
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){
         index = blocks.indexOf(blocks.find { it.id == view.id })
@@ -97,7 +99,6 @@ fun BlockSample(
         inside()
     }
 }
-//private fun String.letters() = filter { it.isLetter() }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -106,7 +107,7 @@ fun TextFieldSample(
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
-    var text by remember {
+    var text by rememberSaveable {
         mutableStateOf("")
     }
 
@@ -115,9 +116,7 @@ fun TextFieldSample(
         onValueChange = { newText ->
             run {
                 onValueChange(newText)
-                if (newText.matches(Regex("[a-zA-z0-9.,+\\-/*<>=!()]*"))) {
-                    text = newText
-                }
+                text = newText
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

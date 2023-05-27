@@ -28,7 +28,7 @@ var variables = mutableMapOf<String, Variable>()
 var blocksToRender: MutableList<Block> = mutableStateListOf()
 var blocksToAdd = blocksToRender
 var alpha: MutableState<Float> = mutableStateOf(1f)
-
+var chooseIn = mutableStateOf("")
 lateinit var localDensity: Density
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -36,7 +36,8 @@ lateinit var keyboardController: SoftwareKeyboardController
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun OnLoad() {
+fun OnLoad()
+{
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 

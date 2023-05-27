@@ -29,23 +29,12 @@ import androidx.compose.ui.unit.sp
 import com.example.mobile.*
 import com.example.mobile.R
 import com.example.mobile.Utils.BlockInformation
+import com.example.mobile.Utils.getExpression
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
-
-fun getWhileExpression(
-    whileBlocks: MutableList<Block>,
-    condition: String
-): String {
-    var actions = mutableListOf<String>()
-    for (i in whileBlocks) {
-        actions.add(i.expression.value)
-    }
-    if (actions.size > 0) return "w${condition}:${Json.encodeToString(actions)}"
-    else return ""
-}
 
 @Composable
 fun While(
@@ -56,6 +45,7 @@ fun While(
     val blocks = view.blocks
     val whileBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
     var condition by rememberSaveable { mutableStateOf("") }
+
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){
         index = blocks.indexOf(blocks.find { it.id == view.id })
@@ -63,8 +53,7 @@ fun While(
 
     for (i in whileBlocksToRender) {
         LaunchedEffect(i.expression.value) {
-            blocks[index].expression.value = getWhileExpression(whileBlocksToRender, condition)
-            println(blocks[index].expression.value)
+            blocks[index].expression.value = getExpression(whileBlocksToRender, condition)
         }
     }
     BlockSample(view = view, shape = RoundedCornerShape(5), inside =
@@ -100,7 +89,7 @@ fun While(
                 TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                     condition = newText
                     blocks[index].expression.value =
-                        getWhileExpression(whileBlocksToRender, condition)
+                        getExpression(whileBlocksToRender, condition)
                 })
             }
             Column(
@@ -125,6 +114,7 @@ fun While(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
+                        chooseIn.value  = "Cycle"
                         blocksToAdd = whileBlocksToRender
                         scope.launch { drawerState.open() }
                     },

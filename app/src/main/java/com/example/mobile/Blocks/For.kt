@@ -1,9 +1,5 @@
 package com.example.mobile.ui.theme
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,7 +9,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -29,38 +27,41 @@ import androidx.compose.ui.unit.sp
 import com.example.mobile.*
 import com.example.mobile.R
 import com.example.mobile.Utils.BlockInformation
+import com.example.mobile.Utils.getExpression
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.util.*
 
-fun getForExpression(
-    forBlocks: MutableList<Block>,
-    condition: String,
-    variable: String,
-    action: String,
-    value: String,
-): String {
-    var actions = mutableListOf<String>()
-    for (i in forBlocks) {
-        actions.add(i.expression.value)
-    }
-    if (actions.size > 0) return "f=${variable}=${value};${condition};=${variable}=${action}:${
-        Json.encodeToString(
-            actions
+@Composable
+fun <T: Any> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
+    return rememberSaveable(
+        saver = listSaver(
+            save = { stateList ->
+                if (stateList.isNotEmpty()) {
+                    val first = stateList.first()
+                    if (!canBeSaved(first)) {
+                        throw IllegalStateException("${first::class} cannot be saved. By default only types which can be stored in the Bundle class can be saved.")
+                    }
+                }
+                stateList.toList()
+            },
+            restore = { it.toMutableStateList() }
         )
-    }"
-    else return ""
+    ) {
+        elements.toList().toMutableStateList()
+    }
 }
-
 @Composable
 fun For(
     view: BlockInformation,
     scope: CoroutineScope,
     drawerState: DrawerState,
 ) {
+//    SaveableStateRegistry(
+//        restoredValues = Map<MutableState<Block>, <MutableState<Block>>>,
+//        canBeSaved = {mutableStateOf() }
+//    )
     val forBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
+//    forBlocksToRender = rememberMutableStateListOf(elements = forBlocksToRender)
     var variable by rememberSaveable { mutableStateOf("") }
     var value by rememberSaveable { mutableStateOf("") }
     var condition by rememberSaveable { mutableStateOf("") }
@@ -76,8 +77,7 @@ fun For(
     for (i in forBlocksToRender) {
         LaunchedEffect(i.expression.value) {
             blocks[index].expression.value =
-                getForExpression(forBlocksToRender, condition, variable, action, value)
-            println(index)
+                getExpression(forBlocksToRender, condition, variable, action, value)
         }
     }
     //wa>0:wab>0;action;action;action;action
@@ -119,7 +119,7 @@ fun For(
                     TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         variable = newText
                         blocks[index].expression.value =
-                            getForExpression(
+                            getExpression(
                                 forBlocksToRender,
                                 condition,
                                 variable,
@@ -140,7 +140,7 @@ fun For(
                     TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         value = newText
                         blocks[index].expression.value =
-                            getForExpression(
+                            getExpression(
                                 forBlocksToRender,
                                 condition,
                                 variable,
@@ -169,7 +169,7 @@ fun For(
                     TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         condition = newText
                         blocks[index].expression.value =
-                            getForExpression(
+                            getExpression(
                                 forBlocksToRender,
                                 condition,
                                 variable,
@@ -198,7 +198,7 @@ fun For(
                     TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         variable = newText
                         blocks[index].expression.value =
-                            getForExpression(
+                            getExpression(
                                 forBlocksToRender,
                                 condition,
                                 variable,
@@ -219,7 +219,7 @@ fun For(
                     TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                         action = newText
                         blocks[index].expression.value =
-                            getForExpression(
+                            getExpression(
                                 forBlocksToRender,
                                 condition,
                                 variable,
@@ -235,32 +235,16 @@ fun For(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
-            ) {
+            )
+            {
                 forBlocksToRender.forEach { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) forBlocksToRender.remove(
-                        block
-                    )
-                    AnimatedVisibility(
-                        visibleState = block.visibleState,
-                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-                    )
-                    {
-                        block.element()
-                    }
+                    block.element()
                 }
-//                Button(
-//                    onClick = {
-//                        blocksToAdd = forBlocksToRender
-//                        scope.launch{drawerState.open()}
-//                    }
-//                ) {
-//                    Text(text = "+")
-//                }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
+                        chooseIn.value = "Cycle"
                         blocksToAdd = forBlocksToRender
                         scope.launch { drawerState.open() }
                     },

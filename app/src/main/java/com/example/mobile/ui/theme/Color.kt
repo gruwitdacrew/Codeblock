@@ -14,6 +14,7 @@ var assignment_color_2 = Color(0xFF61A8CE)
 
 var cycle_color_1 = Color(0xFFB892FF)
 var cycle_color_2 = Color(0xFF616CCE)
+var cycle_color_3 = Color(0xFF2561C9)
 
 var condition_color_1 = Color(0xFF57989E)
 var condition_color_2 = Color(0xFF6163CE)
@@ -23,6 +24,9 @@ var init_color_2 = Color(0xFF44ABB9)
 
 var print_color_1 = Color(0xFF83E6E9)
 var print_color_2 = Color(0xFF7BB944)
+
+var func_color_1 = Color(0xFFC48E08)
+var func_color_2 = Color(0xFFC4BB08)
 
 var bottom_bar_color = Color(0xFFA7C3FF)
 

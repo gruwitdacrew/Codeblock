@@ -1,19 +1,26 @@
 package com.example.mobile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,9 +29,11 @@ import com.example.mobile.ui.theme.init_color_1
 import com.example.mobile.ui.theme.init_color_2
 import java.util.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InitBlock(view: BlockInformation,) {
     var key by rememberSaveable { mutableStateOf("") }
+    var dimension by rememberSaveable { mutableStateOf(1) }
     var selectedType by remember { mutableStateOf("") }
     val blocks = view.blocks
     var index = blocks.indexOf(blocks.find { it.id == view.id })
@@ -69,7 +78,8 @@ fun InitBlock(view: BlockInformation,) {
                             key = key.trim()
                             blocks[index].expression.value = "iInt;$key"
                         }
-                    ) {
+                    )
+                    {
                         Text(
                             text = "Int",
                             color = Color.White,
@@ -115,7 +125,7 @@ fun InitBlock(view: BlockInformation,) {
                             selectedType = "Array\n<Int>"
                             expanded = false
                             key = key.trim()
-                            blocks[index].expression.value = "iArray<Int>;$key"
+                            blocks[index].expression.value = "i$selectedType^$dimension;$key"
                         }
                     ) {
                         Text(
@@ -125,13 +135,38 @@ fun InitBlock(view: BlockInformation,) {
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
+                        Text(
+                            text = dimension.toString(),
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 10.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(onClick = {
+                            dimension++
+                        },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                        )
+                        {
+                            Text(text = "+", color = Color.White)
+                        }
+                        Button(onClick = {
+                            if (dimension>1)dimension--
+                        },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                        )
+                        {
+                            Text(text = "-", color = Color.White)
+                        }
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Array\n<String>"
                             expanded = false
                             key = key.trim()
-                            blocks[index].expression.value = "iArray<String>;$key"
+                            blocks[index].expression.value = "i$selectedType^$dimension;$key"
                         }
                     ) {
                         Text(
@@ -139,16 +174,40 @@ fun InitBlock(view: BlockInformation,) {
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.fedra_sans)),
                             fontSize = 15.sp,
-
                             textAlign = TextAlign.Center
                         )
+                        Text(
+                            text = dimension.toString(),
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 10.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(onClick = {
+                            dimension++
+                        },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                        )
+                        {
+                            Text(text = "+", color = Color.White)
+                        }
+                        Button(onClick = {
+                            if (dimension>1)dimension--
+                        },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                        )
+                        {
+                            Text(text = "-", color = Color.White)
+                        }
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Array\n<Bool>"
                             expanded = false
                             key = key.trim()
-                            blocks[index].expression.value = "iArray<Bool>;$key"
+                            blocks[index].expression.value = "i$selectedType^$dimension;$key"
                         }
                     ) {
                         Text(
@@ -158,6 +217,31 @@ fun InitBlock(view: BlockInformation,) {
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
+                        Text(
+                            text = dimension.toString(),
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
+                            fontSize = 10.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(onClick = {
+                            dimension++
+                        },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                        )
+                        {
+                            Text(text = "+", color = Color.White)
+                        }
+                        Button(onClick = {
+                            if (dimension>1)dimension--
+                        },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                        )
+                        {
+                            Text(text = "-", color = Color.White)
+                        }
                     }
                 }
                 Button(
@@ -179,7 +263,7 @@ fun InitBlock(view: BlockInformation,) {
             }
             TextFieldSample(modifier = Modifier.weight(2f), onValueChange = {
                 key = it.trim()
-                blocks[index].expression.value = "i$selectedType;$key"
+                blocks[index].expression.value = "i$selectedType^$dimension;$key"
             })
 
             IconButton(
@@ -188,7 +272,8 @@ fun InitBlock(view: BlockInformation,) {
                 },
                 modifier = Modifier
                     .defaultMinSize(minWidth = 60.dp)
-            ) {
+            )
+            {
                 Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
             }
         }

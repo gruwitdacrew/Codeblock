@@ -1,10 +1,7 @@
 package com.example.mobile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -34,6 +31,7 @@ fun PrintBlock(
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     val blocks = view.blocks
+
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){
         index = blocks.indexOf(blocks.find { it.id == view.id })
@@ -54,7 +52,7 @@ fun PrintBlock(
                 "Print",
                 modifier = Modifier
                     .padding(14.dp)
-                    .width(60.dp),
+                    .wrapContentWidth(),
                 fontSize = 20.sp,
                 color = Color.White,
                 fontFamily = FontFamily(Font(R.font.fedra_sans)),

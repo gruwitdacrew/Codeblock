@@ -29,37 +29,9 @@ import androidx.compose.ui.unit.sp
 import com.example.mobile.*
 import com.example.mobile.R
 import com.example.mobile.Utils.BlockInformation
+import com.example.mobile.Utils.getExpression
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.util.*
-
-fun getIfExpression(
-    ifBlocks: MutableList<Block>,
-    elseBlocks: MutableList<Block>,
-    condition: String
-): String {
-    var ifActions = mutableListOf<String>()
-    var elseActions = mutableListOf<String>()
-    var indexOfElse = 0
-    for (i in ifBlocks) {
-        ifActions.add(i.expression.value)
-        indexOfElse += i.expression.value.length
-    }
-    for (i in elseBlocks) {
-        elseActions.add(i.expression.value)
-    }
-    if (ifActions.size > 0 && elseActions.size > 0) {
-        return "?${indexOfElse};${condition}:${Json.encodeToString(ifActions)}:${
-            Json.encodeToString(
-                ifActions
-            )
-        }"
-    } else if (ifActions.size > 0) {
-        return "?${-1};${condition}:${Json.encodeToString(ifActions)}"
-    } else return ""
-}
 
 @Composable
 fun Condition(
@@ -74,20 +46,20 @@ fun Condition(
 
 
     var index = blocks.indexOf(blocks.find { it.id == view.id })
-    LaunchedEffect(blocks.size){
+    LaunchedEffect(blocks.size) {
         index = blocks.indexOf(blocks.find { it.id == view.id })
     }
 
     for (i in ifBlocksToRender) {
         LaunchedEffect(i.expression.value) {
             blocks[index].expression.value =
-                getIfExpression(ifBlocksToRender, elseBlocksToRender, condition)
+                getExpression(ifBlocksToRender, elseBlocksToRender, condition)
         }
     }
     for (i in elseBlocksToRender) {
         LaunchedEffect(i.expression.value) {
             blocks[index].expression.value =
-                getIfExpression(ifBlocksToRender, elseBlocksToRender, condition)
+                getExpression(ifBlocksToRender, elseBlocksToRender, condition)
         }
     }
 
@@ -125,7 +97,7 @@ fun Condition(
                 TextFieldSample(modifier = Modifier.weight(2f), onValueChange = { newText ->
                     condition = newText
                     blocks[index].expression.value =
-                        getIfExpression(ifBlocksToRender, elseBlocksToRender, condition)
+                        getExpression(ifBlocksToRender, elseBlocksToRender, condition)
                 })
             }
             Column(
