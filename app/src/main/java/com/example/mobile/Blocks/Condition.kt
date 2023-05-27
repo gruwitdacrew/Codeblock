@@ -68,8 +68,8 @@ fun Condition(
     drawerState: DrawerState,
 ) {
     val blocks = view.blocks
-    val ifBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
-    val elseBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
+    val ifBlocksToRender = view.childs["ifActions"]!!
+    val elseBlocksToRender = view.childs["elseActions"]!!
     var condition by rememberSaveable { mutableStateOf("") }
 
     var index = blocks.indexOf(blocks.find { it.id == view.id })

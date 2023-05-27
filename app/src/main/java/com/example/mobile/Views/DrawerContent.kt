@@ -10,6 +10,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,7 +62,8 @@ fun DrawerContent(
                     color = Color(0xFFC48E08),
                     shape = CutCornerShape(50),
                     onClick = {
-                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),)
+                        val childs = mutableMapOf<String, MutableList<Block>>("arguments" to mutableStateListOf(), "actions" to mutableStateListOf())
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),"",childs)
                         blocksToAdd.add(Block(view.id, { FunctionBlock(scope, drawerState, view) }, mutableStateOf("")))
                         scope.launch { drawerState.close() }
                     }
@@ -127,7 +129,8 @@ fun DrawerContent(
                     color = cycle_color_1,
                     shape = CutCornerShape(50),
                     onClick = {
-                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(), chooseNow.value)
+                        val childs = mutableMapOf<String, MutableList<Block>>("actions" to mutableStateListOf())
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(), chooseNow.value,childs)
                         blocksToAdd.add(Block(view.id, { For(view, scope, drawerState) }, mutableStateOf("")))
                         scope.launch { drawerState.close() }
                     }
@@ -137,7 +140,8 @@ fun DrawerContent(
                     color = cycle_color_2,
                     shape = CutCornerShape(50),
                     onClick = {
-                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        val childs = mutableMapOf<String, MutableList<Block>>("actions" to mutableStateListOf())
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value, childs)
                         blocksToAdd.add(Block(view.id, { While(view, scope, drawerState) }, mutableStateOf("")))
                         scope.launch { drawerState.close() }
                     }
@@ -147,7 +151,8 @@ fun DrawerContent(
                     color = condition_color_1,
                     shape = CutCornerShape(50),
                     onClick = {
-                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        val childs = mutableMapOf<String, MutableList<Block>>("ifActions" to mutableStateListOf(), "elseActions" to mutableStateListOf())
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value, childs)
                         blocksToAdd.add(Block(view.id, { Condition(view, scope, drawerState) }, mutableStateOf("")))
                         scope.launch { drawerState.close() }
                     }

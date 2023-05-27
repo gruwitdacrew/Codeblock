@@ -60,7 +60,7 @@ fun For(
     scope: CoroutineScope,
     drawerState: DrawerState,
 ) {
-    val forBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
+    val forBlocksToRender = view.childs["actions"]!!
     val blocks = view.blocks
     var variable by rememberSaveable { mutableStateOf("") }
     var value by rememberSaveable { mutableStateOf("") }

@@ -63,8 +63,8 @@ fun FunctionBlock(
     view: BlockInformation
 ) {
     val blocks  = view.blocks
-    val argumentsToRender: MutableList<Block> = remember { mutableStateListOf() }
-    val functionBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
+    val argumentsToRender = view.childs["arguments"]!!
+    val functionBlocksToRender = view.childs["actions"]!!
     var type by rememberSaveable {
         mutableStateOf("Void")
     }
