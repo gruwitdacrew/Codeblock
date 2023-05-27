@@ -246,18 +246,11 @@ fun For(
                         block.element()
                     }
                 }
-//                Button(
-//                    onClick = {
-//                        blocksToAdd = forBlocksToRender
-//                        scope.launch{drawerState.open()}
-//                    }
-//                ) {
-//                    Text(text = "+")
-//                }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
+                        chooseNow.value = view.namesOfParentsBlocks + " cycle"
                         blocksToAdd = forBlocksToRender
                         scope.launch { drawerState.open() }
                     },

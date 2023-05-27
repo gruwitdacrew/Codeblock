@@ -45,7 +45,7 @@ fun WindowContent(
 ) {
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
-    val lines = remember { mutableStateListOf<String>() }
+//    val lines = remember { mutableStateListOf<String>() }
     val localFocusManager = LocalFocusManager.current
     var offsetX by remember { mutableStateOf(0f) }
     var debugBlockNumber = 0
@@ -142,17 +142,18 @@ fun WindowContent(
                         val finalTasks = blocksToRender.toList()
                         lines.clear()
                         variables.clear()
-                        start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
+//                        start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
                         if (light) {
                             for ((index, element, item) in finalTasks) {
                                 if (item.value.length > 1) {
-                                    start(item.value, lines)
+                                    var result = start(item.value)
+                                    if(result.type == "Exception") lines.add(result.value)
                                 }
                             }
                         } else {
                             for (j in 0..debugBlockNumber) {
                                 if (finalTasks[j].expression.value.length > 1) {
-                                    start(finalTasks[j].expression.value, lines)
+                                    start(finalTasks[j].expression.value)
                                 }
                             }
                             blocksToRender[debugBlockNumber].onDebug.value = false
@@ -165,6 +166,7 @@ fun WindowContent(
                                 blocksToRender[debugBlockNumber].onDebug.value = true
                             }
                         }
+                        println(variables)
                         // Отобразить модальное окно
                         coroutineScope.launch {
                             sheetState.show()
@@ -234,6 +236,7 @@ fun WindowContent(
                 }
                 Button(
                     onClick = {
+                        chooseNow.value = " global"
                         blocksToAdd = blocksToRender
                         scope.launch { drawerState.open() }
                         if (blocksToRender.size >= 1 && !light) {

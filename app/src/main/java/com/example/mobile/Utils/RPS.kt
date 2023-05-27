@@ -95,7 +95,7 @@ class RPS {
         }
 
         @OptIn(ExperimentalSerializationApi::class)
-        private fun operation(item: String, firstVariable: Variable, secondVariable: Variable = Variable("","")):Variable{
+        private fun operation(item: String, firstVariable: Variable, secondVariable: Variable = Variable("null","")):Variable{
             when(item){
                 "-" ->{
                     return Variable((secondVariable.value.toInt() - firstVariable.value.toInt()).toString(), "Int")
@@ -107,47 +107,59 @@ class RPS {
                 }
                 "*" ->{
                     if(firstVariable.type == "Int" && secondVariable.type == "Int") return Variable((secondVariable.value.toInt() * firstVariable.value.toInt()).toString(), "Int")
-                    else return Variable("there is no * operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                    return Variable("there is no * operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                 }
                 "/" ->{
                     if(firstVariable.type == "Int" && secondVariable.type == "Int") return Variable((secondVariable.value.toInt() / firstVariable.value.toInt()).toString(), "Int")
-                    else return Variable("there is no / operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                    return Variable("there is no / operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                 }
                 "%" ->{
                     if(firstVariable.type == "Int" && secondVariable.type == "Int") return Variable((secondVariable.value.toInt() % firstVariable.value.toInt()).toString(), "Int")
-                    else return Variable("there is no % operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                    return Variable("there is no % operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                 }
                 "|" ->{
+                    if(firstVariable.type.contains("Array") || secondVariable.type.contains("Array")) return Variable("there is no | operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                     return Variable((Translate.toBool(secondVariable) || Translate.toBool(firstVariable)).toString(), "Bool")
                 }
                 "&" ->{
-                    return Variable((Translate.toBool(secondVariable) && Translate.toBool(firstVariable)).toString(), "Bool")
+                    if(firstVariable.type.contains("Array") || secondVariable.type.contains("Array")) return Variable("there is no & operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                    return Variable((Translate.toBool(secondVariable) || Translate.toBool(firstVariable)).toString(), "Bool")
                 }
                 ">" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value > firstVariable.value).toString(), "Bool")
                     if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() > firstVariable.value.toInt()).toString(), "Bool")
-                    else return Variable((secondVariable.value > firstVariable.value).toString(), "Bool")
+                    return Variable("there is no > operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                 }
                 "<" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value < firstVariable.value).toString(), "Bool")
                     if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() < firstVariable.value.toInt()).toString(), "Bool")
-                    else return Variable((secondVariable.value < firstVariable.value).toString(), "Bool")
+                    return Variable("there is no < operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                 }
                 ">=" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value >= firstVariable.value).toString(), "Bool")
                     if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() >= firstVariable.value.toInt()).toString(), "Bool")
-                    else return Variable((secondVariable.value >= firstVariable.value).toString(), "Bool")
+                    return Variable("there is no >= operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                 }
                 "<=" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value <= firstVariable.value).toString(), "Bool")
                     if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() <= firstVariable.value.toInt()).toString(), "Bool")
-                    else return Variable((secondVariable.value <= firstVariable.value).toString(), "Bool")
+                    return Variable("there is no <= operation between ${firstVariable.type} ${secondVariable.type}","Exception")
                 }
-                "==" -> return Variable((secondVariable.value == firstVariable.value).toString(), "Bool")
-                "!=" -> return Variable((secondVariable.value != firstVariable.value).toString(), "Bool")
+                "==" -> {
+                    if(secondVariable.type == firstVariable.type) return Variable((secondVariable.value == firstVariable.value).toString(), "Bool")
+                    return Variable("there is no == operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "!=" -> {
+                    if(secondVariable.type == firstVariable.type) return Variable((secondVariable.value == firstVariable.value).toString(), "Bool")
+                    return Variable("there is no != operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
                 "index" ->{
-                    if(secondVariable.type == "String")return Variable(secondVariable.value[firstVariable.value.toInt()].toString(),"String")
-                    else return Variable(Json.decodeFromString<List<String>>(secondVariable.value)[firstVariable.value.toInt()],"${"(?<=<)[A-Za-z]+(?=>)".toRegex().find(secondVariable.type)?.value}")
+                    if(secondVariable.type == "String" && firstVariable.type == "Int" && firstVariable.value.toInt()>-1 && firstVariable.value.toInt()<secondVariable.value.length)return Variable(secondVariable.value[firstVariable.value.toInt()].toString(),"String")
+                    if(secondVariable.type.contains("Array") && firstVariable.type == "Int" && firstVariable.value.toInt()>-1 && firstVariable.value.toInt()<Json.decodeFromString<List<String>>(secondVariable.value).size) return Variable(Json.decodeFromString<List<String>>(secondVariable.value)[firstVariable.value.toInt()],"${"(?<=<)[A-Za-z<>]+(?=>)".toRegex().find(secondVariable.type)?.value}")
+                    if(secondVariable.type == "String" || secondVariable.type.contains("Array")) return Variable("index out of range", "Exception")
+                    return Variable("${secondVariable.type} is not iterated", "Exception")
                 }
                 "," -> {
-                    //нужно разделить массив и список аргументов
-                    println(firstVariable)
                     if(firstVariable.type != "TempArray"){
                         return Variable(Json.encodeToString(mutableListOf(firstVariable.value, secondVariable.value)),"TempArray")
                     }
@@ -161,7 +173,14 @@ class RPS {
                     val value:List<String>
                     if(firstVariable.type == "TempArray"){
                         value = Json.decodeFromString<List<String>>(firstVariable.value).reversed()
-                        return Variable(Json.encodeToString(value),"Array<${Translate.getType(value[0])}>")
+                        var type = ""
+                        for(i in value){
+                            if(type.isEmpty()) type = Translate.getType(i)
+                            else{
+                                if(Translate.getType(i) != type) return Variable("arguments of array must have one type", "Exception")
+                            }
+                        }
+                        return Variable(Json.encodeToString(value),"Array<$type>")
                     }
                     else{
                         value = listOf(firstVariable.value)
@@ -179,12 +198,16 @@ class RPS {
                     val newDictionary = mutableMapOf<String, Variable>()
                     for(index in arguments.indices){
                         if(index<values.size){
+                            val variableNow = Translate.getVariable(values[index])
                             when(arguments[index][0]){
                                 'i' -> {
-                                    newDictionary[arguments[index].substring(1).split(";")[1]] = Translate.getVariable(values[index])
+                                    if(arguments[index].substring(1).split(";")[0] != variableNow.type){
+                                        return Variable("Required ${arguments[index].substring(1).split(";")[0]} but got ${variableNow.type}", "Exception")
+                                    }
+                                    newDictionary[arguments[index].substring(1).split(";")[1]] = variableNow
                                 }
                                 '=' -> {
-                                    newDictionary[arguments[index].substring(1).split("=", limit = 2)[0]] = Translate.getVariable(values[index])
+                                    newDictionary[arguments[index].substring(1).split("=", limit = 2)[0]] = variableNow
                                 }
                             }
                         }
@@ -213,10 +236,14 @@ class RPS {
             for(i in listOfActions){
                 println("$stack $i")
                 if(i.matches("([+/*%><|&=!,-]+)|(index)|(Function)|(Array)".toRegex())){
-                    val first = stack.last()
-                    stack.removeLast()
+                    if(stack.size == 0 && i!="Function") return Variable("${i} must have more arguments","Exception")
+                    var first = Variable("", "")
+                    if(stack.size != 0){
+                        first = stack.last()
+                        stack.removeLast()
+                    }
                     var second = first
-                    if(i != "Array"){
+                    if(i != "Array" && stack.size>0){
                         second = stack.last()
                         stack.removeLast()
                     }
@@ -225,7 +252,10 @@ class RPS {
                 }
                 else if(i != " ") {
                     if (dictionary.containsKey(i)) stack.addLast(dictionary[i]!!)
-                    else stack.addLast(Translate.getVariable(i))
+                    else{
+                        if(Translate.getVariable(i).type == "Exception") return Translate.getVariable(i)
+                        stack.addLast(Translate.getVariable(i))
+                    }
                 }
             }
             return stack.first()

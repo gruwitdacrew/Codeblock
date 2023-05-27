@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.example.mobile.Blocks.FunctionBlock
+import com.example.mobile.Blocks.VoidBlock
 import com.example.mobile.Utils.BlockInformation
 import com.example.mobile.ui.theme.*
 import kotlinx.coroutines.CoroutineScope
@@ -54,80 +55,142 @@ fun DrawerContent(
     {
         items(count = 1)
         {
-            BlockCard(
-                text = "Function",
-                color = Color(0xFFC48E08),
-                shape = CutCornerShape(50),
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { FunctionBlock(scope, drawerState, view) }, mutableStateOf("")))
-                }
-            )
-            BlockCard(
-                text = "Return",
-                color = Color(0xFFC48E08),
-                shape = CutCornerShape(50),
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { Return(view) }, mutableStateOf("")))
-                }
-            )
-            BlockCard(
-                text = "Break",
-                color = print_color_1,
-                shape = RectangleShape,
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { Break(view) }, mutableStateOf("")))
-                    scope.launch { drawerState.close() }
-                }
-            )
-            BlockCard(
-                text = "Continue",
-                color = print_color_1,
-                shape = RectangleShape,
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { Continue(view) }, mutableStateOf("")))
-                    scope.launch { drawerState.close() }
-                }
-            )
-            BlockCard(
-                text = "For",
-                color = cycle_color_1,
-                shape = CutCornerShape(50),
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { For(view, scope, drawerState) }, mutableStateOf("")))
-                    scope.launch { drawerState.close() }
-                }
-            )
-            BlockCard(
-                text = "While",
-                color = cycle_color_2,
-                shape = CutCornerShape(50),
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { While(view, scope, drawerState) }, mutableStateOf("")))
-                    scope.launch { drawerState.close() }
-                }
-            )
-            BlockCard(
-                text = "IfBlock",
-                color = condition_color_1,
-                shape = CutCornerShape(50),
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { Condition(view, scope, drawerState) }, mutableStateOf("")))
-                    scope.launch { drawerState.close() }
-                }
-            )
+            if(chooseNow.value.contains("global")){
+                BlockCard(
+                    text = "Function",
+                    color = Color(0xFFC48E08),
+                    shape = CutCornerShape(50),
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),)
+                        blocksToAdd.add(Block(view.id, { FunctionBlock(scope, drawerState, view) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+            }
+           if(chooseNow.value.contains("function")){
+               BlockCard(
+                   text = "Return",
+                   color = Color(0xFFC48E08),
+                   shape = CutCornerShape(50),
+                   onClick = {
+                       val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                       blocksToAdd.add(Block(view.id, { Return(view) }, mutableStateOf("")))
+                       scope.launch { drawerState.close() }
+                   }
+               )
+           }
+            if(!chooseNow.value.contains("args")){
+                BlockCard(
+                    text = "PushBack",
+                    color = assignment_color_1,
+                    shape = CutCornerShape(
+                        topStartPercent = 100,
+                        topEndPercent = 5,
+                        bottomStartPercent = 5,
+                        bottomEndPercent = 100
+                    ), onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { PushBack(view) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    })
+                BlockCard(
+                    text = "PopAt",
+                    color = assignment_color_1,
+                    shape = CutCornerShape(
+                        topStartPercent = 100,
+                        topEndPercent = 5,
+                        bottomStartPercent = 5,
+                        bottomEndPercent = 100
+                    ), onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { Pop(view) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                BlockCard(
+                    text = "Void",
+                    color = assignment_color_1,
+                    shape = CutCornerShape(
+                        topStartPercent = 100,
+                        topEndPercent = 5,
+                        bottomStartPercent = 5,
+                        bottomEndPercent = 100
+                    ),
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { VoidBlock(view) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                BlockCard(
+                    text = "For",
+                    color = cycle_color_1,
+                    shape = CutCornerShape(50),
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(), chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { For(view, scope, drawerState) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                BlockCard(
+                    text = "While",
+                    color = cycle_color_2,
+                    shape = CutCornerShape(50),
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { While(view, scope, drawerState) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                BlockCard(
+                    text = "IfBlock",
+                    color = condition_color_1,
+                    shape = CutCornerShape(50),
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { Condition(view, scope, drawerState) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                BlockCard(
+                    text = "Print",
+                    color = print_color_1,
+                    shape = RectangleShape,
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { PrintBlock(view) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+            }
+            if(chooseNow.value.contains("cycle")){
+                BlockCard(
+                    text = "Break",
+                    color = print_color_1,
+                    shape = RectangleShape,
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { Break(view) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                BlockCard(
+                    text = "Continue",
+                    color = print_color_1,
+                    shape = RectangleShape,
+                    onClick = {
+                        val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
+                        blocksToAdd.add(Block(view.id, { Continue(view) }, mutableStateOf("")))
+                        scope.launch { drawerState.close() }
+                    }
+                )
+            }
             BlockCard(
                 text = "MyVariable",
                 color = init_color_2,
                 shape = RoundedCornerShape(50),
                 onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
+                    val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
                     blocksToAdd.add(Block(view.id, { InitBlock(view) }, mutableStateOf("")))
                     scope.launch { drawerState.close() }
                 }
@@ -142,18 +205,8 @@ fun DrawerContent(
                     bottomEndPercent = 100
                 ),
                 onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
+                    val view = BlockInformation(blocksToAdd, UUID.randomUUID(),chooseNow.value)
                     blocksToAdd.add(Block(view.id, { Assignment(view) }, mutableStateOf("")))
-                    scope.launch { drawerState.close() }
-                }
-            )
-            BlockCard(
-                text = "Print",
-                color = print_color_1,
-                shape = RectangleShape,
-                onClick = {
-                    val view = BlockInformation(blocksToAdd, UUID.randomUUID())
-                    blocksToAdd.add(Block(view.id, { PrintBlock(view) }, mutableStateOf("")))
                     scope.launch { drawerState.close() }
                 }
             )

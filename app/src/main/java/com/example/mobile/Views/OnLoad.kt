@@ -29,6 +29,8 @@ var blocksToRender: MutableList<Block> = mutableStateListOf()
 var blocksToAdd = blocksToRender
 var alpha: MutableState<Float> = mutableStateOf(1f)
 lateinit var localDensity: Density
+val lines =  mutableStateListOf<String>()
+val chooseNow = mutableStateOf("")
 
 @OptIn(ExperimentalComposeUiApi::class)
 lateinit var keyboardController: SoftwareKeyboardController

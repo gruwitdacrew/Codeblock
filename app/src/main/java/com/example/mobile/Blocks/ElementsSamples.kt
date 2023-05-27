@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -107,7 +108,7 @@ fun TextFieldSample(
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
-    var text by remember {
+    var text by rememberSaveable {
         mutableStateOf("")
     }
 

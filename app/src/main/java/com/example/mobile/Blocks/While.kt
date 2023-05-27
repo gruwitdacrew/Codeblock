@@ -125,6 +125,7 @@ fun While(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
+                        chooseNow.value = view.namesOfParentsBlocks + " cycle"
                         blocksToAdd = whileBlocksToRender
                         scope.launch { drawerState.open() }
                     },

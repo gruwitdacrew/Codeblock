@@ -1,6 +1,5 @@
 package com.example.mobile.Blocks
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -70,7 +69,7 @@ fun FunctionBlock(
         mutableStateOf("Void")
     }
     var name by rememberSaveable {
-        mutableStateOf("Void")
+        mutableStateOf("")
     }
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){
@@ -94,7 +93,6 @@ fun FunctionBlock(
     {
         Column(
             modifier = Modifier
-//                .sizeIn(minWidth = 30.dp,minHeight = 600.dp)
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(condition_color_1, condition_color_2))
@@ -141,6 +139,7 @@ fun FunctionBlock(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
+                        chooseNow.value = view.namesOfParentsBlocks + " args"
                         blocksToAdd = argumentsToRender
                         scope.launch{drawerState.open()}
                     },
@@ -166,6 +165,7 @@ fun FunctionBlock(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
+                        chooseNow.value = view.namesOfParentsBlocks + " function"
                         blocksToAdd = functionBlocksToRender
                         scope.launch{drawerState.open()}
                     },
