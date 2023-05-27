@@ -142,12 +142,16 @@ fun WindowContent(
                         val finalTasks = blocksToRender.toList()
                         lines.clear()
                         variables.clear()
-//                        start("*Array<Int>;bubleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]", lines = lines)
+                        start("*Array<Int>;bubbleSort;[\"iArray<Int>;arr\",\"iInt;size\"]:[\"f=i=0;i<size-1;=i=i+1:[\\\"f=j=0;j<size-1;=j=j+1:[\\\\\\\"?-1;arr[j]>arr[j+1]:[\\\\\\\\\\\\\\\"=b=arr[j]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j]=arr[j+1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"=arr[j+1]=b\\\\\\\\\\\\\\\"]\\\\\\\"]\\\"]\",\"rarr\"]")
                         if (light) {
                             for ((index, element, item) in finalTasks) {
                                 if (item.value.length > 1) {
                                     var result = start(item.value)
-                                    if(result.type == "Exception") lines.add(result.value)
+                                    if(result.type == "Exception"){
+                                        lines.add(result.value)
+                                        blocksToRender[blocksToRender.indexOf(blocksToRender.find{it.id==index})].onDebug.value = true
+                                        break
+                                    }
                                 }
                             }
                         } else {

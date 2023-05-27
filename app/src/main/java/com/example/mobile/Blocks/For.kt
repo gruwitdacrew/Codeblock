@@ -233,19 +233,22 @@ fun For(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                forBlocksToRender.forEach { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) forBlocksToRender.remove(
-                        block
-                    )
-                    AnimatedVisibility(
-                        visibleState = block.visibleState,
-                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-                    )
-                    {
-                        block.element()
+                for (item in forBlocksToRender) {
+                    key(item) {
+                        if (!item.visibleState.currentState && !item.visibleState.targetState) handleBlockDelete(item.id,forBlocksToRender)
+                        AnimatedVisibility(
+                            visibleState = item.visibleState,
+                            enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                        )
+                        {
+                            item.element()
+                        }
                     }
                 }
+//                forBlocksToRender.forEach { block ->
+//
+//                }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),

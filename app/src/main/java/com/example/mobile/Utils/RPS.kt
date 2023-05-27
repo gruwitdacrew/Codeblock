@@ -191,7 +191,6 @@ class RPS {
                     var values:List<String>
                     if(firstVariable.type == "TempArray") values = Json.decodeFromString<MutableList<String>>(firstVariable.value).reversed()
                     else values = listOf(firstVariable.value)
-
                     val(indexOfActions, blocks) = secondVariable.value.split(";", limit = 2)
                     val arguments = Json.decodeFromString<List<String>>(blocks.substring(0,indexOfActions.toInt()))
                     val actions = Json.decodeFromString<List<String>>(blocks.substring(indexOfActions.toInt()+1))
@@ -201,9 +200,6 @@ class RPS {
                             val variableNow = Translate.getVariable(values[index])
                             when(arguments[index][0]){
                                 'i' -> {
-                                    if(arguments[index].substring(1).split(";")[0] != variableNow.type){
-                                        return Variable("Required ${arguments[index].substring(1).split(";")[0]} but got ${variableNow.type}", "Exception")
-                                    }
                                     newDictionary[arguments[index].substring(1).split(";")[1]] = variableNow
                                 }
                                 '=' -> {
@@ -216,13 +212,14 @@ class RPS {
                             newDictionary[variable] = Translate.getVariable(expression)
                         }
                     }
+
                     for(item in actions){
-                        start(item, dictionary = newDictionary)
+                        start(item, newDictionary)
                         if(item[0] == 'r') break
                     }
 
                     if(newDictionary.containsKey("return")) return Variable(newDictionary["return"]!!.value, secondVariable.type)
-                    else return Variable("Ты дебил?", "String")
+                    else return Variable("This function doesn't have return", "Exception")
                 }
             }
             return Variable("empty", "Exception")

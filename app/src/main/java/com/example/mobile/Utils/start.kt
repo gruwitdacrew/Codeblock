@@ -63,6 +63,7 @@ fun start(item:String, dictionary:MutableMap<String,Variable> = variables):Varia
             val newDictionary = dictionary.toMutableMap()
             if(RPS.calculate(newDictionary, condition).type == "Exception") return RPS.calculate(newDictionary, condition)
             if(indexOfElse.toInt() != -1){
+                println("$indexOfElse ${taskNow[1]}")
                 val ifActions = Json.decodeFromString<List<String>>(taskNow[1].substring(0,indexOfElse.toInt()))
                 val elseActions = Json.decodeFromString<List<String>>(taskNow[1].substring(indexOfElse.toInt()+1))
                 if(RPS.calculate(newDictionary, condition).value == "true"){

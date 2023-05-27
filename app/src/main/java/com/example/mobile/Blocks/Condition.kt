@@ -42,20 +42,14 @@ fun getIfExpression(
 ): String {
     var ifActions = mutableListOf<String>()
     var elseActions = mutableListOf<String>()
-    var indexOfElse = 0
     for (i in ifBlocks) {
         ifActions.add(i.expression.value)
-        indexOfElse += i.expression.value.length
     }
     for (i in elseBlocks) {
         elseActions.add(i.expression.value)
     }
     if (ifActions.size > 0 && elseActions.size > 0) {
-        return "?${indexOfElse};${condition}:${Json.encodeToString(ifActions)}:${
-            Json.encodeToString(
-                ifActions
-            )
-        }"
+        return "?${Json.encodeToString(ifActions).length};${condition}:${Json.encodeToString(ifActions)}:${Json.encodeToString(elseActions)}"
     } else if (ifActions.size > 0) {
         return "?${-1};${condition}:${Json.encodeToString(ifActions)}"
     } else return ""
