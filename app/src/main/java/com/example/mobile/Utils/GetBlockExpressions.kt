@@ -1,9 +1,11 @@
 package com.example.mobile.Utils
 
 import com.example.mobile.Block
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+@OptIn(ExperimentalSerializationApi::class)
 fun getExpression(
     forBlocks: MutableList<Block>,
     condition: String,
@@ -23,6 +25,7 @@ fun getExpression(
     else return ""
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 fun getExpression(
     name:String,
     type: String,
@@ -40,11 +43,12 @@ fun getExpression(
     else return "";
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 fun getExpression(
     whileBlocks: MutableList<Block>,
     condition: String
 ): String {
-    var actions = mutableListOf<String>()
+    val actions = mutableListOf<String>()
     for (i in whileBlocks) {
         actions.add(i.expression.value)
     }
@@ -53,23 +57,22 @@ fun getExpression(
 }
 
 
+@OptIn(ExperimentalSerializationApi::class)
 fun getExpression(
     ifBlocks: MutableList<Block>,
     elseBlocks: MutableList<Block>,
     condition: String
 ): String {
-    var ifActions = mutableListOf<String>()
-    var elseActions = mutableListOf<String>()
-    var indexOfElse = 0
+    val ifActions = mutableListOf<String>()
+    val elseActions = mutableListOf<String>()
     for (i in ifBlocks) {
         ifActions.add(i.expression.value)
-        indexOfElse += i.expression.value.length
     }
     for (i in elseBlocks) {
         elseActions.add(i.expression.value)
     }
     if (ifActions.size > 0 && elseActions.size > 0) {
-        return "?${indexOfElse};${condition}:${Json.encodeToString(ifActions)}:${
+        return "?${Json.encodeToString(ifActions).length};${condition}:${Json.encodeToString(ifActions)}:${
             Json.encodeToString(
                 ifActions
             )

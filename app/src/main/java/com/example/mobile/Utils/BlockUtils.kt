@@ -7,8 +7,10 @@ import kotlinx.serialization.json.Json
 import java.util.*
 
 fun handleBlockDelete(blockId: UUID, blocks: MutableList<Block>) {
-    val deleteBlock = blocks.find { it.id == blockId }
-    blocks.remove(deleteBlock)
+//    val deleteBlock = blocks.find { it.id == blockId }
+    var index = blocks.indexOf(blocks.find { it.id == blockId })
+//    blocks.remove(deleteBlock)
+    blocks[index].visibleState.targetState = false
 }
 fun putInPlace(offsetY: Dp, blockId: UUID, blocks: MutableList<Block>) {
     val index = blocks.indexOf(blocks.find { it.id == blockId })

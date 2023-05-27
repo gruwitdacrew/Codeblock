@@ -47,13 +47,13 @@ fun FunctionBlock(
     view: BlockInformation
 ) {
     val blocks  = view.blocks
-    val argumentsToRender: MutableList<Block> = remember { mutableStateListOf() }
-    val functionBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
+    val argumentsToRender = view.childs["arguments"]!!
+    val functionBlocksToRender = view.childs["actions"]!!
     var type by rememberSaveable {
         mutableStateOf("Void")
     }
     var name by rememberSaveable {
-        mutableStateOf("Void")
+        mutableStateOf("")
     }
     var index = blocks.indexOf(blocks.find { it.id == view.id })
     LaunchedEffect(blocks.size){
@@ -73,11 +73,11 @@ fun FunctionBlock(
         }
     }
 
+
     BlockSample(view = view, shape = RoundedCornerShape(5), inside =
     {
         Column(
             modifier = Modifier
-//                .sizeIn(minWidth = 30.dp,minHeight = 600.dp)
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(func_color_1, func_color_2))
@@ -273,24 +273,28 @@ fun FunctionBlock(
                         textAlign = TextAlign.Center
                     )
                 }
-                argumentsToRender.forEach{block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) argumentsToRender.remove(
-                        block
-                    )
-                    AnimatedVisibility(
-                        visibleState = block.visibleState,
-                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-                    )
-                    {
-                        block.element()
+                for (item in argumentsToRender) {
+                    key(item) {
+                        if (!item.visibleState.currentState && !item.visibleState.targetState) handleBlockDelete(
+                            item.id,
+                            argumentsToRender
+                        )
+                        AnimatedVisibility(
+                            visibleState = item.visibleState,
+                            enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                        )
+                        {
+                            item.element()
+                        }
+                        println("${item.id} ${item.offset}")
                     }
                 }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
-                        chooseIn.value  = "FunctionArgs"
+                        chooseNow.value  = "args"
                         blocksToAdd = argumentsToRender
                         scope.launch{drawerState.open()}
                     },
@@ -324,24 +328,28 @@ fun FunctionBlock(
                 verticalArrangement = Arrangement.Center
             )
             {
-                functionBlocksToRender.forEach{block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) functionBlocksToRender.remove(
-                        block
-                    )
-                    AnimatedVisibility(
-                        visibleState = block.visibleState,
-                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-                    )
-                    {
-                        block.element()
+                for (item in functionBlocksToRender) {
+                    key(item) {
+                        if (!item.visibleState.currentState && !item.visibleState.targetState) handleBlockDelete(
+                            item.id,
+                            functionBlocksToRender
+                        )
+                        AnimatedVisibility(
+                            visibleState = item.visibleState,
+                            enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                        )
+                        {
+                            item.element()
+                        }
+                        println("${item.id} ${item.offset}")
                     }
                 }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
-                        chooseIn.value  = "Function"
+                        chooseNow.value  = "function"
                         blocksToAdd = functionBlocksToRender
                         scope.launch{ drawerState.open() }
                     },

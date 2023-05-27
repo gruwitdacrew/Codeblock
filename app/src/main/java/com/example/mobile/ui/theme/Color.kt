@@ -39,7 +39,7 @@ var screen = mutableStateOf(R.drawable.screen_light)
 
 fun DarkTheme() {
     color_on_change_theme1.value = Color(0xFFFFFFFF)
-    color_on_change_theme2.value = Color(0xFFFCDD1F)
+    color_on_change_theme2.value = Color(0xFFAC9400)
     bottom_bar_color = Color(0xFF213152)
     screen.value = R.drawable.screen_dark
 }

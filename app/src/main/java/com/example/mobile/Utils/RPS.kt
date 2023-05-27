@@ -37,7 +37,7 @@ class RPS {
                             if(isFunc) answer += "Function"
                             isFunc = false
                             stack.removeLast();
-                        }//[[1,2],[3,4]][0]
+                        }
                         ']' -> {
                             while(stack.size > 0 && (stack.last() != "Array" && stack.last() != "index")){
                                 answer+=(stack.last() + " ")
@@ -95,6 +95,136 @@ class RPS {
         }
 
         @OptIn(ExperimentalSerializationApi::class)
+        private fun operation(item: String, firstVariable: Variable, secondVariable: Variable = Variable("null","")):Variable{
+            when(item){
+                "-" ->{
+                    return Variable((secondVariable.value.toInt() - firstVariable.value.toInt()).toString(), "Int")
+                }
+                "+" -> {
+                    if(firstVariable.type == "String" || secondVariable.type == "String") return Variable((secondVariable.value + firstVariable.value), "String")
+                    else if(firstVariable.type == "Int" && secondVariable.type == "Int") return Variable((secondVariable.value.toInt() + firstVariable.value.toInt()).toString(), "Int")
+                    else return Variable("there is no + operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "*" ->{
+                    if(firstVariable.type == "Int" && secondVariable.type == "Int") return Variable((secondVariable.value.toInt() * firstVariable.value.toInt()).toString(), "Int")
+                    return Variable("there is no * operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "/" ->{
+                    if(firstVariable.type == "Int" && secondVariable.type == "Int") return Variable((secondVariable.value.toInt() / firstVariable.value.toInt()).toString(), "Int")
+                    return Variable("there is no / operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "%" ->{
+                    if(firstVariable.type == "Int" && secondVariable.type == "Int") return Variable((secondVariable.value.toInt() % firstVariable.value.toInt()).toString(), "Int")
+                    return Variable("there is no % operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "|" ->{
+                    if(firstVariable.type.contains("Array") || secondVariable.type.contains("Array")) return Variable("there is no | operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                    return Variable((Translate.toBool(secondVariable) || Translate.toBool(firstVariable)).toString(), "Bool")
+                }
+                "&" ->{
+                    if(firstVariable.type.contains("Array") || secondVariable.type.contains("Array")) return Variable("there is no & operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                    return Variable((Translate.toBool(secondVariable) || Translate.toBool(firstVariable)).toString(), "Bool")
+                }
+                ">" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value > firstVariable.value).toString(), "Bool")
+                    if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() > firstVariable.value.toInt()).toString(), "Bool")
+                    return Variable("there is no > operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "<" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value < firstVariable.value).toString(), "Bool")
+                    if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() < firstVariable.value.toInt()).toString(), "Bool")
+                    return Variable("there is no < operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                ">=" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value >= firstVariable.value).toString(), "Bool")
+                    if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() >= firstVariable.value.toInt()).toString(), "Bool")
+                    return Variable("there is no >= operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "<=" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "String") return Variable((secondVariable.value <= firstVariable.value).toString(), "Bool")
+                    if(secondVariable.type == "Int" && firstVariable.type == "Int") return Variable((secondVariable.value.toInt() <= firstVariable.value.toInt()).toString(), "Bool")
+                    return Variable("there is no <= operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "==" -> {
+                    if(secondVariable.type == firstVariable.type) return Variable((secondVariable.value == firstVariable.value).toString(), "Bool")
+                    return Variable("there is no == operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "!=" -> {
+                    if(secondVariable.type == firstVariable.type) return Variable((secondVariable.value == firstVariable.value).toString(), "Bool")
+                    return Variable("there is no != operation between ${firstVariable.type} ${secondVariable.type}","Exception")
+                }
+                "index" ->{
+                    if(secondVariable.type == "String" && firstVariable.type == "Int" && firstVariable.value.toInt()>-1 && firstVariable.value.toInt()<secondVariable.value.length)return Variable(secondVariable.value[firstVariable.value.toInt()].toString(),"String")
+                    if(secondVariable.type.contains("Array") && firstVariable.type == "Int" && firstVariable.value.toInt()>-1 && firstVariable.value.toInt()<Json.decodeFromString<List<String>>(secondVariable.value).size) return Variable(Json.decodeFromString<List<String>>(secondVariable.value)[firstVariable.value.toInt()],"${"(?<=<)[A-Za-z<>]+(?=>)".toRegex().find(secondVariable.type)?.value}")
+                    if(secondVariable.type == "String" || secondVariable.type.contains("Array")) return Variable("index out of range", "Exception")
+                    return Variable("${secondVariable.type} is not iterated", "Exception")
+                }
+                "," -> {
+                    if(firstVariable.type != "TempArray"){
+                        return Variable(Json.encodeToString(mutableListOf(firstVariable.value, secondVariable.value)),"TempArray")
+                    }
+                    else{
+                        var value = Json.decodeFromString<MutableList<String>>(firstVariable.value)
+                        value.add(secondVariable.value)
+                        return Variable(Json.encodeToString(value),"TempArray")
+                    }
+                }
+                "Array" -> {
+                    val value:List<String>
+                    if(firstVariable.type == "TempArray"){
+                        value = Json.decodeFromString<List<String>>(firstVariable.value).reversed()
+                        var type = ""
+                        for(i in value){
+                            if(type.isEmpty()) type = Translate.getType(i)
+                            else{
+                                if(Translate.getType(i) != type) return Variable("arguments of array must have one type", "Exception")
+                            }
+                        }
+                        return Variable(Json.encodeToString(value),"Array<$type>")
+                    }
+                    else{
+                        value = listOf(firstVariable.value)
+                        return Variable(Json.encodeToString(value),"Array<${firstVariable.type}>")
+                    }
+                }
+                "Function" -> {
+                    var values:List<String>
+                    if(firstVariable.type == "TempArray") values = Json.decodeFromString<MutableList<String>>(firstVariable.value).reversed()
+                    else values = listOf(firstVariable.value)
+                    val(indexOfActions, blocks) = secondVariable.value.split(";", limit = 2)
+                    val arguments = Json.decodeFromString<List<String>>(blocks.substring(0,indexOfActions.toInt()))
+                    val actions = Json.decodeFromString<List<String>>(blocks.substring(indexOfActions.toInt()+1))
+                    val newDictionary = mutableMapOf<String, Variable>()
+                    for(index in arguments.indices){
+                        if(index<values.size){
+                            val variableNow = Translate.getVariable(values[index])
+                            when(arguments[index][0]){
+                                'i' -> {
+                                    newDictionary[arguments[index].substring(1).split(";")[1]] = variableNow
+                                }
+                                '=' -> {
+                                    newDictionary[arguments[index].substring(1).split("=", limit = 2)[0]] = variableNow
+                                }
+                            }
+                        }
+                        else{
+                            val (variable, expression) = arguments[index].substring(1).split("=", limit = 2)
+                            newDictionary[variable] = Translate.getVariable(expression)
+                        }
+                    }
+
+                    for(item in actions){
+                        start(item, newDictionary)
+                        if(item[0] == 'r') break
+                    }
+
+                    if(newDictionary.containsKey("return")) return Variable(newDictionary["return"]!!.value, secondVariable.type)
+                    else return Variable("This function doesn't have return", "Exception")
+                }
+            }
+            return Variable("empty", "Exception")
+        }
+        @OptIn(ExperimentalSerializationApi::class)
         @JvmStatic
         public fun fromRPS(dictionary: MutableMap<String, Variable>, input: String) : Variable{
             println(input)
@@ -103,123 +233,28 @@ class RPS {
             for(i in listOfActions){
                 println("$stack $i")
                 if(i.matches("([+/*%><|&=!,-]+)|(index)|(Function)|(Array)".toRegex())){
-                    val first = stack.last()
-                    stack.removeLast()
+                    if(stack.size == 0 && i!="Function") return Variable("${i} must have more arguments","Exception")
+                    var first = Variable("", "")
+                    if(stack.size != 0){
+                        first = stack.last()
+                        stack.removeLast()
+                    }
                     var second = first
-                    if(i != "Array"){
+                    if(i != "Array" && stack.size>0){
                         second = stack.last()
                         stack.removeLast()
                     }
-                    when(i){
-                        "-" ->{
-                            stack.addLast(Variable((second.value.toInt() - first.value.toInt()).toString(), "Int"))
-                        }
-                        "+" -> {
-                            if(first.type == "String" || second.type == "String") stack.addLast(Variable((second.value + first.value), "String"))
-                            else stack.addLast(Variable((second.value.toInt() + first.value.toInt()).toString(), "Int"))
-                        }
-                        "*" ->{
-                            stack.addLast(Variable((second.value.toInt() * first.value.toInt()).toString(), "Int"))
-                        }
-                        "/" ->{
-                            stack.addLast(Variable((second.value.toInt() / first.value.toInt()).toString(), "Int"))
-                        }
-                        "%" ->{
-                            stack.addLast(Variable((second.value.toInt() % first.value.toInt()).toString(), "Int"))
-                        }
-                        "|" ->{
-                            stack.addLast(Variable((Translate.toBool(second) || Translate.toBool(first)).toString(), "Bool"))
-                        }
-                        "&" ->{
-                            stack.addLast(Variable((Translate.toBool(second) && Translate.toBool(first)).toString(), "Bool"))
-                        }
-                        ">" ->{
-                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() > first.value.toInt()).toString(), "Bool"))
-                            else stack.addLast(Variable((second.value > first.value).toString(), "Bool"))
-                        }
-                        "<" ->{
-                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() < first.value.toInt()).toString(), "Bool"))
-                            else stack.addLast(Variable((second.value < first.value).toString(), "Bool"))
-                        }
-                        ">=" ->{
-                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() >= first.value.toInt()).toString(), "Bool"))
-                            else stack.addLast(Variable((second.value >= first.value).toString(), "Bool"))
-                        }
-                        "<=" ->{
-                            if(second.type == "Int" && first.type == "Int") stack.addLast(Variable((second.value.toInt() <= first.value.toInt()).toString(), "Bool"))
-                            else stack.addLast(Variable((second.value <= first.value).toString(), "Bool"))
-                        }
-                        "==" -> stack.addLast(Variable((second.value == first.value).toString(), "Bool"))
-                        "!=" -> stack.addLast(Variable((second.value != first.value).toString(), "Bool"))
-                        "index" ->{
-                            if(second.type == "String") stack.addLast(Variable(second.value[first.value.toInt()].toString(),"String"))
-                            else stack.addLast(Variable(Json.decodeFromString<List<String>>(second.value)[first.value.toInt()],"${"(?<=<)[A-Za-z]+(?=>)".toRegex().find(second.type)?.value}"))
-                        }
-                        "," -> {
-                            //нужно разделить массив и список аргументов
-                            println(first)
-                            if(first.type != "TempArray"){
-                                stack.addLast(Variable(Json.encodeToString(mutableListOf(first.value, second.value)),"TempArray"))
-                            }
-                            else{
-                                var value = Json.decodeFromString<MutableList<String>>(first.value)
-                                value.add(second.value)
-                                stack.addLast(Variable(Json.encodeToString(value),"TempArray"))
-                            }
-                        }
-                        "Array" -> {
-                            val value:List<String>
-                            if(first.type == "TempArray"){
-                                value = Json.decodeFromString<List<String>>(first.value).reversed()
-                                stack.addLast(Variable(Json.encodeToString(value),"Array<${Translate.getType(value[0])}>"))
-                            }
-                            else{
-                                value = listOf(first.value)
-                                stack.addLast(Variable(Json.encodeToString(value),"Array<${first.type}>"))
-                            }
-
-                        }
-                        "Function" -> {
-                            var values:List<String>
-                            if(first.type == "TempArray") values = Json.decodeFromString<MutableList<String>>(first.value).reversed()
-                            else values = listOf(first.value)
-
-                            val(indexOfActions, blocks) = second.value.split(";", limit = 2)
-                            val arguments = Json.decodeFromString<List<String>>(blocks.substring(0,indexOfActions.toInt()))
-                            val actions = Json.decodeFromString<List<String>>(blocks.substring(indexOfActions.toInt()+1))
-                            val newDictionary = mutableMapOf<String, Variable>()
-                            for(index in arguments.indices){
-                                if(index<values.size){
-                                    when(arguments[index][0]){
-                                        'i' -> {
-                                            newDictionary[arguments[index].substring(1).split(";")[1]] = Translate.getVariable(values[index])
-                                        }
-                                        '=' -> {
-                                            newDictionary[arguments[index].substring(1).split("=", limit = 2)[0]] = Translate.getVariable(values[index])
-                                        }
-                                    }
-                                }
-                                else{
-                                    val (variable, expression) = arguments[index].substring(1).split("=", limit = 2)
-                                    newDictionary[variable] = Translate.getVariable(expression)
-                                }
-                            }
-                            for(item in actions){
-                                start(item, dictionary = newDictionary)
-                                if(item[0] == 'r') break
-                            }
-
-                            if(newDictionary.containsKey("return")) stack.addLast(Variable(newDictionary["return"]!!.value, second.type))
-                            else stack.addLast(Variable("Ты дебил?", "String"))
-                        }
-                    }
+                    stack.addLast(operation(i,first,second))
+                    if(stack.last().type == "Exception") break
                 }
                 else if(i != " ") {
                     if (dictionary.containsKey(i)) stack.addLast(dictionary[i]!!)
-                    else stack.addLast(Translate.getVariable(i))
+                    else{
+                        if(Translate.getVariable(i).type == "Exception") return Translate.getVariable(i)
+                        stack.addLast(Translate.getVariable(i))
+                    }
                 }
             }
-            println(stack.first())
             return stack.first()
         }
     }

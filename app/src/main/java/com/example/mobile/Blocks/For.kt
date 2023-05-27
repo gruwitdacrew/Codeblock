@@ -1,5 +1,9 @@
 package com.example.mobile.ui.theme
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,9 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -32,36 +34,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun <T: Any> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
-    return rememberSaveable(
-        saver = listSaver(
-            save = { stateList ->
-                if (stateList.isNotEmpty()) {
-                    val first = stateList.first()
-                    if (!canBeSaved(first)) {
-                        throw IllegalStateException("${first::class} cannot be saved. By default only types which can be stored in the Bundle class can be saved.")
-                    }
-                }
-                stateList.toList()
-            },
-            restore = { it.toMutableStateList() }
-        )
-    ) {
-        elements.toList().toMutableStateList()
-    }
-}
-@Composable
 fun For(
     view: BlockInformation,
     scope: CoroutineScope,
     drawerState: DrawerState,
 ) {
-//    SaveableStateRegistry(
-//        restoredValues = Map<MutableState<Block>, <MutableState<Block>>>,
-//        canBeSaved = {mutableStateOf() }
-//    )
-    val forBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
-//    forBlocksToRender = rememberMutableStateListOf(elements = forBlocksToRender)
+    val forBlocksToRender = view.childs["actions"]!!
     var variable by rememberSaveable { mutableStateOf("") }
     var value by rememberSaveable { mutableStateOf("") }
     var condition by rememberSaveable { mutableStateOf("") }
@@ -237,14 +215,28 @@ fun For(
                 verticalArrangement = Arrangement.Center
             )
             {
-                forBlocksToRender.forEach { block ->
-                    block.element()
+                for (item in forBlocksToRender) {
+                    key(item) {
+                        if (!item.visibleState.currentState && !item.visibleState.targetState) handleBlockDelete(
+                            item.id,
+                            forBlocksToRender
+                        )
+                        AnimatedVisibility(
+                            visibleState = item.visibleState,
+                            enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                        )
+                        {
+                            item.element()
+                        }
+                        println("${item.id} ${item.offset}")
+                    }
                 }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
-                        chooseIn.value = "Cycle"
+                        chooseNow.value = "cycle"
                         blocksToAdd = forBlocksToRender
                         scope.launch { drawerState.open() }
                     },

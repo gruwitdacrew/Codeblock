@@ -125,7 +125,7 @@ fun InitBlock(view: BlockInformation,) {
                             selectedType = "Array\n<Int>"
                             expanded = false
                             key = key.trim()
-                            blocks[index].expression.value = "i$selectedType^$dimension;$key"
+                            blocks[index].expression.value = "i$selectedType;$key"
                         }
                     ) {
                         Text(
@@ -135,38 +135,13 @@ fun InitBlock(view: BlockInformation,) {
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
-                        Text(
-                            text = dimension.toString(),
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
-                            fontSize = 10.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        Button(onClick = {
-                            dimension++
-                        },
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                        )
-                        {
-                            Text(text = "+", color = Color.White)
-                        }
-                        Button(onClick = {
-                            if (dimension>1)dimension--
-                        },
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                        )
-                        {
-                            Text(text = "-", color = Color.White)
-                        }
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Array\n<String>"
                             expanded = false
                             key = key.trim()
-                            blocks[index].expression.value = "i$selectedType^$dimension;$key"
+                            blocks[index].expression.value = "i$selectedType;$key"
                         }
                     ) {
                         Text(
@@ -176,38 +151,13 @@ fun InitBlock(view: BlockInformation,) {
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
-                        Text(
-                            text = dimension.toString(),
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
-                            fontSize = 10.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        Button(onClick = {
-                            dimension++
-                        },
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                        )
-                        {
-                            Text(text = "+", color = Color.White)
-                        }
-                        Button(onClick = {
-                            if (dimension>1)dimension--
-                        },
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                        )
-                        {
-                            Text(text = "-", color = Color.White)
-                        }
                     }
                     DropdownMenuItem(
                         onClick = {
                             selectedType = "Array\n<Bool>"
                             expanded = false
                             key = key.trim()
-                            blocks[index].expression.value = "i$selectedType^$dimension;$key"
+                            blocks[index].expression.value = "i$selectedType;$key"
                         }
                     ) {
                         Text(
@@ -217,31 +167,6 @@ fun InitBlock(view: BlockInformation,) {
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
-                        Text(
-                            text = dimension.toString(),
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.fedra_sans)),
-                            fontSize = 10.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        Button(onClick = {
-                            dimension++
-                        },
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                        )
-                        {
-                            Text(text = "+", color = Color.White)
-                        }
-                        Button(onClick = {
-                            if (dimension>1)dimension--
-                        },
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                        )
-                        {
-                            Text(text = "-", color = Color.White)
-                        }
                     }
                 }
                 Button(

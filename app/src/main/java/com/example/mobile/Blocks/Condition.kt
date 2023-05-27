@@ -1,5 +1,6 @@
 package com.example.mobile.ui.theme
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
@@ -33,14 +34,15 @@ import com.example.mobile.Utils.getExpression
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun Condition(
     view: BlockInformation,
     scope: CoroutineScope,
     drawerState: DrawerState,
 ) {
-    val ifBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
-    val elseBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
+    var ifBlocksToRender:MutableList<Block> = view.childs["ifActions"]!!
+    var elseBlocksToRender = view.childs["elseActions"]!!
     var condition by rememberSaveable { mutableStateOf("") }
     val blocks = view.blocks
 
@@ -107,19 +109,22 @@ fun Condition(
                 verticalArrangement = Arrangement.Center
             )
             {
-                ifBlocksToRender.forEach { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) ifBlocksToRender.remove(
-                        block
-                    )
-                    AnimatedVisibility(
-                        visibleState = block.visibleState,
-                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-                    )
-                    {
-                        block.element()
+                for (item in ifBlocksToRender) {
+                    key(item) {
+                        if (!item.visibleState.currentState && !item.visibleState.targetState) handleBlockDelete(
+                            item.id,
+                            ifBlocksToRender
+                        )
+                        AnimatedVisibility(
+                            visibleState = item.visibleState,
+                            enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                        )
+                        {
+                            item.element()
+                        }
+                        println("${item.id} ${item.offset}")
                     }
-                    println("${block.id} ${block.offset.value}")
                 }
                 Button(
                     modifier = Modifier
@@ -163,19 +168,22 @@ fun Condition(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                elseBlocksToRender.forEach { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) elseBlocksToRender.remove(
-                        block
-                    )
-                    AnimatedVisibility(
-                        visibleState = block.visibleState,
-                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-                    )
-                    {
-                        block.element()
+                for (item in elseBlocksToRender) {
+                    key(item) {
+                        if (!item.visibleState.currentState && !item.visibleState.targetState) handleBlockDelete(
+                            item.id,
+                            elseBlocksToRender
+                        )
+                        AnimatedVisibility(
+                            visibleState = item.visibleState,
+                            enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                        )
+                        {
+                            item.element()
+                        }
+                        println("${item.id} ${item.offset}")
                     }
-                    println("${block.id} ${block.offset}")
                 }
                 Button(
                     modifier = Modifier

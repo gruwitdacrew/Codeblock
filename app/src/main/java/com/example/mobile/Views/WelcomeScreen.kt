@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,9 +46,8 @@ class WelcomeScreen : ComponentActivity() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White)
-                        .padding(vertical = 200.dp),
-                    verticalArrangement = Arrangement.Top,
+                        .background(Color.White),
+                    verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Box(
@@ -69,7 +69,8 @@ class WelcomeScreen : ComponentActivity() {
                             Image(
                                 painter = painterResource(id = com.example.mobile.R.drawable.puzzle_piece),
                                 contentDescription = "Logo",
-                                modifier = Modifier.size(76.dp)
+
+                                modifier = Modifier.size(120.dp)
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(
@@ -85,7 +86,7 @@ class WelcomeScreen : ComponentActivity() {
                             startActivity(Intent(this@WelcomeScreen, MainActivity::class.java))
                         },
                         modifier = Modifier
-                            .padding(top = 80.dp)
+                            .padding(vertical = 20.dp)
                             .border(
                                 width = 3.dp,
                                 brush = Brush.linearGradient(
@@ -96,6 +97,7 @@ class WelcomeScreen : ComponentActivity() {
                                 ),
                                 shape = RoundedCornerShape(50)
                             )
+                            .width(200.dp)
                             .padding(16.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = bottom_bar_color,
@@ -103,7 +105,7 @@ class WelcomeScreen : ComponentActivity() {
                         shape = RoundedCornerShape(50)
                     ) {
                         Text(
-                            text = "+ iBlockFile",
+                            text = "Start",
                             textAlign = TextAlign.Center,
                             fontSize = 30.sp,
                             color = Color.White,

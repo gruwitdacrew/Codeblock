@@ -27,8 +27,9 @@ data class Variable(var value: String, val type: String)
 var variables = mutableMapOf<String, Variable>()
 var blocksToRender: MutableList<Block> = mutableStateListOf()
 var blocksToAdd = blocksToRender
+val lines = mutableStateListOf<String>()
 var alpha: MutableState<Float> = mutableStateOf(1f)
-var chooseIn = mutableStateOf("")
+var chooseNow = mutableStateOf("")
 lateinit var localDensity: Density
 
 @OptIn(ExperimentalComposeUiApi::class)

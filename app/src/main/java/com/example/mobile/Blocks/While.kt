@@ -43,7 +43,7 @@ fun While(
     drawerState: DrawerState,
 ) {
     val blocks = view.blocks
-    val whileBlocksToRender: MutableList<Block> = remember { mutableStateListOf() }
+    val whileBlocksToRender = view.childs["actions"]!!
     var condition by rememberSaveable { mutableStateOf("") }
 
     var index = blocks.indexOf(blocks.find { it.id == view.id })
@@ -97,24 +97,28 @@ fun While(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                whileBlocksToRender.forEach { block ->
-                    if (!block.visibleState.currentState && !block.visibleState.targetState) whileBlocksToRender.remove(
-                        block
-                    )
-                    AnimatedVisibility(
-                        visibleState = block.visibleState,
-                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                        exit = scaleOut(animationSpec = tween(durationMillis = 100)),
-                    )
-                    {
-                        block.element()
+                for (item in whileBlocksToRender) {
+                    key(item) {
+                        if (!item.visibleState.currentState && !item.visibleState.targetState) handleBlockDelete(
+                            item.id,
+                            whileBlocksToRender
+                        )
+                        AnimatedVisibility(
+                            visibleState = item.visibleState,
+                            enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                            exit = scaleOut(animationSpec = tween(durationMillis = 100)),
+                        )
+                        {
+                            item.element()
+                        }
+                        println("${item.id} ${item.offset}")
                     }
                 }
                 Button(
                     modifier = Modifier
                         .size(60.dp, 35.dp),
                     onClick = {
-                        chooseIn.value  = "Cycle"
+                        chooseNow.value  = "cycle"
                         blocksToAdd = whileBlocksToRender
                         scope.launch { drawerState.open() }
                     },
